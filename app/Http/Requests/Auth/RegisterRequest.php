@@ -14,44 +14,31 @@ class RegisterRequest extends FormRequest
 {
     public function authorize(): bool { return true; }
 
-    public function rules(): array
-    {
-        return [
-            'name_ar'  => 'required|string|max:255',
-            'username' => ['required','string','max:100','unique:users','regex:/^[a-zA-Z0-9_.]+$/'],
+   public function rules(): array
+{
+    return [
+        'name_ar' => 'required|max:255',
+        'username' => 'required|max:100|unique:users,username',
+        'phone' => 'required|unique:users,phone',
+        'region' => 'required',
+        'password' => 'required|min:6|confirmed',
+    ];
+}
 
-            // Jordanian phone — UNIQUE so the same number can't sign up twice.
-            //   07XXXXXXXX | +9627XXXXXXXX | 009627XXXXXXXX
-            'phone'    => ['required','string','unique:users,phone',
-                           'regex:/^(?:\+962|00962|0)7\d{8}$/'],
-
-            'region'   => 'required|string|max:100',
-
-            'password' => ['required','string','confirmed',
-                           Password::min(8)->letters()->numbers()],
-            'password_confirmation' => 'required|string',
-        ];
-    }
-
-    public function messages(): array
-    {
-        $isEn = str_starts_with((string) $this->header('Accept-Language', 'ar'), 'en');
-
-        return [
-            'username.regex'     => $isEn
-                ? 'Username may contain only letters, numbers, dots and underscores'
-                : 'اسم المستخدم يجب أن يحتوي على حروف وأرقام ونقطة وشرطة سفلية فقط',
-            'username.unique'    => $isEn ? 'Username is already taken' : 'اسم المستخدم مستخدم مسبقاً',
-            'phone.unique'       => $isEn ? 'Phone number is already registered' : 'رقم الهاتف مسجّل مسبقاً',
-            'phone.regex'        => $isEn
-                ? 'Please enter a valid Jordanian phone number (e.g. 0791234567 or +962791234567)'
-                : 'يرجى إدخال رقم هاتف أردني صالح (مثال: 0791234567 أو +962791234567)',
-            'phone.required'     => $isEn ? 'Phone number is required'    : 'رقم الهاتف مطلوب',
-            'region.required'    => $isEn ? 'Region is required'          : 'المنطقة مطلوبة',
-            'password.min'       => $isEn ? 'Password must be at least 8 characters' : 'كلمة المرور يجب أن تكون 8 أحرف على الأقل',
-            'password.confirmed' => $isEn ? 'Passwords do not match'      : 'كلمتا المرور غير متطابقتين',
-        ];
-    }
+   public function messages(): array
+{
+    return [
+        'name_ar.required' => 'الاسم مطلوب',
+        'username.required' => 'اسم المستخدم مطلوب',
+        'username.unique' => 'اسم المستخدم مستخدم مسبقاً',
+        'phone.required' => 'رقم الهاتف مطلوب',
+        'phone.unique' => 'رقم الهاتف مسجل مسبقاً',
+        'region.required' => 'المنطقة مطلوبة',
+        'password.required' => 'كلمة المرور مطلوبة',
+        'password.min' => 'كلمة المرور يجب أن تكون 6 أحرف على الأقل',
+        'password.confirmed' => 'تأكيد كلمة المرور غير مطابق',
+    ];
+}
 
     /**
      * Normalize the phone to a canonical international form so the same
