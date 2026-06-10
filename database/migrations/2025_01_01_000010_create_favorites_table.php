@@ -1,0 +1,20 @@
+<?php
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration {
+    // Toggle endpoint: POST /favorites/{productId}
+    // Unique constraint mirrors Flutter duplicate prevention
+    public function up(): void {
+        Schema::create('favorites', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
+            $table->foreignId('product_id')->constrained('products')->cascadeOnDelete();
+            $table->timestamp('created_at')->nullable();
+            $table->unique(['user_id', 'product_id'], 'uq_favorites');
+            $table->index('product_id');
+        });
+    }
+    public function down(): void { Schema::dropIfExists('favorites'); }
+};
