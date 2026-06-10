@@ -13,23 +13,27 @@ use App\Services\AuthService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Log;
 
+/**
+ * Phone-based authentication.
+ *
+ * Account identifier is the user's Jordanian phone number. Registration
+ * captures name, username, phone, region, and password — no email.
+ * Login accepts only phone + password.
+ */
 class AuthController extends ApiController
 {
     public function __construct(private AuthService $authService) {}
 
     // ── POST /auth/register ───────────────────────────────────────────────────
-    // Registration immediately returns token + user.
-    // No email verification step exists in this application.
-
     public function register(RegisterRequest $request): JsonResponse
     {
         $user = User::create([
             'name_ar'  => $request->name_ar,
             'username' => $request->username,
-            'email'    => $request->email,
             'phone'    => $request->phone,
+            'region'   => $request->region,
             'password' => Hash::make($request->password),
         ]);
 
@@ -43,10 +47,9 @@ class AuthController extends ApiController
     }
 
     // ── POST /auth/login ──────────────────────────────────────────────────────
-
     public function login(LoginRequest $request): JsonResponse
     {
-        $user = User::where('email', $request->email)->first();
+        $user = User::where('phone', $request->phone)->first();
 
         if (! $user || ! Hash::check($request->password, $user->password)) {
             return $this->error('بيانات تسجيل الدخول غير صحيحة', 401);
@@ -62,44 +65,44 @@ class AuthController extends ApiController
     }
 
     // ── POST /auth/logout ─────────────────────────────────────────────────────
-
     public function logout(Request $request): JsonResponse
     {
-        $request->user()->currentAccessToken()->delete();
-
+        $request->user()->tokens()->where('name', 'mobile')->delete();
         return $this->success(null, 'تم تسجيل الخروج بنجاح');
     }
 
     // ── GET /auth/me ──────────────────────────────────────────────────────────
-
     public function me(Request $request): JsonResponse
     {
         return $this->success(new UserResource($request->user()));
     }
 
     // ── POST /auth/forgot-password ────────────────────────────────────────────
-    // Generates a 6-digit OTP and emails it to the user.
-
+    // Generates a 6-digit OTP. In a real deployment this would be sent via SMS.
+    // For now we log the OTP server-side and ALSO return it in non-production
+    // environments so QA can test without an SMS provider.
     public function forgotPassword(ForgotPasswordRequest $request): JsonResponse
     {
-        $user = User::where('email', $request->email)->firstOrFail();
-        $otp  = $this->authService->generateResetOtp($request->email);
+        $user = User::where('phone', $request->phone)->firstOrFail();
+        $otp  = $this->authService->generateResetOtpForPhone($request->phone);
 
-        $this->sendResetOtpEmail($user, $otp);
+        // TODO: integrate an SMS provider (Twilio, MessageBird, local Jordan SMS gateway).
+        // For now log so it appears in storage/logs/laravel.log during development.
+        Log::info("Password reset OTP for {$request->phone}: {$otp}");
+
+        $data = app()->environment('production') ? null : ['otp' => $otp];
 
         return $this->success(
-            null,
-            'تم إرسال رمز إعادة تعيين كلمة المرور إلى بريدك الإلكتروني'
+            $data,
+            'تم إرسال رمز إعادة تعيين كلمة المرور إلى رقم هاتفك'
         );
     }
 
     // ── POST /auth/reset-password ─────────────────────────────────────────────
-    // Validates the 6-digit OTP from the email and sets the new password.
-
     public function resetPassword(ResetPasswordRequest $request): JsonResponse
     {
-        $success = $this->authService->resetPasswordWithOtp(
-            $request->email,
+        $success = $this->authService->resetPasswordWithOtpByPhone(
+            $request->phone,
             $request->otp,
             $request->password
         );
@@ -109,19 +112,5 @@ class AuthController extends ApiController
         }
 
         return $this->success(null, 'تم تغيير كلمة المرور بنجاح');
-    }
-
-    // ── Private helpers ───────────────────────────────────────────────────────
-
-    private function sendResetOtpEmail(User $user, string $otp): void
-    {
-        try {
-            Mail::raw(
-                "رمز إعادة تعيين كلمة المرور: {$otp}\nصالح لمدة 60 دقيقة.",
-                fn($m) => $m->to($user->email)->subject('إعادة تعيين كلمة المرور — J-Buy')
-            );
-        } catch (\Throwable) {
-            logger()->warning("Failed to send reset OTP email to {$user->email}");
-        }
     }
 }

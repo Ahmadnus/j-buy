@@ -5,32 +5,25 @@ namespace App\Services;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Str;
 
 /**
- * AuthService handles password reset OTP flow only.
+ * AuthService handles the password-reset OTP flow.
  *
- * Email verification has been removed from this application.
- * Registration immediately returns an authenticated token.
- *
- * Password reset flow:
- *   1. POST /auth/forgot-password  → generates 6-digit OTP, emails it
- *   2. POST /auth/reset-password   → validates OTP + email, sets new password
+ * Uses the existing `password_reset_tokens` table — we just store the phone
+ * number in the `email` column since the primary key is on that column.
+ * (The column is repurposed as a generic identifier; a future migration
+ * can rename it if needed.)
  */
 class AuthService
 {
     private const RESET_EXPIRY_MINUTES = 60;
 
-    /**
-     * Generate a 6-digit OTP, store it hashed in password_reset_tokens,
-     * and return the plain code to be emailed synchronously.
-     */
-    public function generateResetOtp(string $email): string
+    public function generateResetOtpForPhone(string $phone): string
     {
         $otp = (string) random_int(100000, 999999);
 
         DB::table('password_reset_tokens')->updateOrInsert(
-            ['email' => $email],
+            ['email' => $phone],          // primary key — reused as identifier
             [
                 'token'      => Hash::make($otp),
                 'created_at' => now(),
@@ -40,15 +33,10 @@ class AuthService
         return $otp;
     }
 
-    /**
-     * Validate the OTP sent by the user, then update their password.
-     *
-     * @return bool  true = success, false = invalid or expired OTP
-     */
-    public function resetPasswordWithOtp(string $email, string $otp, string $newPassword): bool
+    public function resetPasswordWithOtpByPhone(string $phone, string $otp, string $newPassword): bool
     {
         $record = DB::table('password_reset_tokens')
-                    ->where('email', $email)
+                    ->where('email', $phone)
                     ->first();
 
         if (! $record) {
@@ -56,8 +44,7 @@ class AuthService
         }
 
         if (now()->diffInMinutes($record->created_at) > self::RESET_EXPIRY_MINUTES) {
-            // Expired — clean up
-            DB::table('password_reset_tokens')->where('email', $email)->delete();
+            DB::table('password_reset_tokens')->where('email', $phone)->delete();
             return false;
         }
 
@@ -65,11 +52,11 @@ class AuthService
             return false;
         }
 
-        User::where('email', $email)->update([
+        User::where('phone', $phone)->update([
             'password' => Hash::make($newPassword),
         ]);
 
-        DB::table('password_reset_tokens')->where('email', $email)->delete();
+        DB::table('password_reset_tokens')->where('email', $phone)->delete();
 
         return true;
     }

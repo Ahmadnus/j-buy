@@ -20,6 +20,7 @@ class UserResource extends JsonResource
             'email'                 => $this->email,
             'phone'                 => $this->phone,
             'address'               => $this->address,
+            'region'                => $this->region,
             // avatar_url accessor on User model returns Media Library URL first
             'avatar_url'            => $this->avatar_url,
             // Flutter reads 'gold'/'silver'/'standard' then converts to Arabic label

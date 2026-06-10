@@ -6,23 +6,37 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    // email_verified_at removed — no email verification flow in this app.
-    // Email is used only for forgot-password / reset-password OTP delivery.
+    /**
+     * Create the users table.
+     * Login is phone-based. Email is optional.
+     */
     public function up(): void
     {
         Schema::create('users', function (Blueprint $table) {
             $table->id();
+
             $table->string('name_ar', 255);
             $table->string('username', 100)->unique();
-            $table->string('email', 255)->unique();
-            $table->string('phone', 30);
+
+            // Primary login identifier
+            $table->string('phone', 30)->unique();
+
+            // Optional now
+            $table->string('email', 255)->nullable()->unique();
+
             $table->text('address')->nullable();
-            // avatar_url kept as fallback; primary avatar via Spatie Media Library
+            $table->string('region', 100)->nullable();
+
+            // Avatar fallback column; Spatie Media Library is the primary source
             $table->string('avatar_url', 500)->nullable();
-            // Flutter: 'ذهبية'=gold  'فضية'=silver  'عادية'=standard
-            $table->enum('membership_tier', ['standard', 'silver', 'gold'])->default('standard');
+
+            $table->enum('membership_tier', ['standard', 'silver', 'gold'])
+                ->default('standard');
+
             $table->boolean('notifications_enabled')->default(true);
+
             $table->string('password');
+
             $table->rememberToken();
             $table->timestamps();
             $table->softDeletes();

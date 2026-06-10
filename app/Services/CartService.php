@@ -23,8 +23,8 @@ class CartService
 
         $existing = CartItem::where('user_id', $user->id)
             ->where('product_id', $data['product_id'])
-            ->where('selected_size',  $data['selected_size'])
-            ->where('selected_color', $data['selected_color'])
+            ->where('selected_size',  $data['selected_size']  ?? '')
+            ->where('selected_color', $data['selected_color'] ?? '')
             ->first();
 
         if ($existing) {
@@ -39,8 +39,8 @@ class CartService
             'price'          => $product->price,
             'currency'       => $product->currency,
             'image_url'      => $product->image_url,
-            'selected_size'  => $data['selected_size'],
-            'selected_color' => $data['selected_color'],
+            'selected_size'  => $data['selected_size']  ?? '',
+            'selected_color' => $data['selected_color'] ?? '',
             'quantity'       => $data['quantity'],
         ]);
     }

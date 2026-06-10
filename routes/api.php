@@ -68,3 +68,8 @@ Route::prefix('v1')->group(function () {
         Route::post('profile/avatar',  [ProfileController::class, 'uploadAvatar']);
     });
 });
+Route::middleware('auth:sanctum')->get('/test-auth', function (\Illuminate\Http\Request $request) {
+    return response()->json([
+        'user' => $request->user(),
+    ]);
+});
