@@ -20,6 +20,29 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::prefix('v1')->group(function () {
+    // ── DEBUG ONLY — remove before going live ─────────────────────────────────
+    // Hit GET /api/v1/debug-auth with your token from the app.
+    // It shows exactly what the server receives so you can confirm
+    // which header/path is delivering the token.
+    Route::get('debug-auth', function (\Illuminate\Http\Request $request) {
+        $serverAuth  = $_SERVER['HTTP_AUTHORIZATION']          ?? null;
+        $redirectAuth = $_SERVER['REDIRECT_HTTP_AUTHORIZATION'] ?? null;
+
+        return response()->json([
+            'header_X_Auth_Token'    => $request->header('X-Auth-Token'),
+            'header_Authorization'   => $request->header('Authorization'),
+            'server_HTTP_AUTHORIZATION'          => $serverAuth,
+            'server_REDIRECT_HTTP_AUTHORIZATION' => $redirectAuth,
+            'query_api_token'                    => $request->query('api_token'),
+            'all_headers'            => $request->headers->all(),
+            'server_keys_with_auth'  => array_filter(
+                array_keys($_SERVER),
+                fn($k) => str_contains(strtolower($k), 'auth')
+            ),
+        ]);
+    });
+
+
 
     // ── Public ────────────────────────────────────────────────────────────────
     Route::prefix('auth')->group(function () {
@@ -38,7 +61,7 @@ Route::prefix('v1')->group(function () {
     Route::get('banners',    [BannerController::class,   'index']);
 
     // ── Authenticated ─────────────────────────────────────────────────────────
-    Route::middleware('auth:sanctum')->group(function () {
+    Route::middleware('auth.token')->group(function () {
 
         // Auth
         Route::post('auth/logout', [AuthController::class, 'logout']);
@@ -67,9 +90,4 @@ Route::prefix('v1')->group(function () {
         Route::put('profile',          [ProfileController::class, 'update']);
         Route::post('profile/avatar',  [ProfileController::class, 'uploadAvatar']);
     });
-});
-Route::middleware('auth:sanctum')->get('/test-auth', function (\Illuminate\Http\Request $request) {
-    return response()->json([
-        'user' => $request->user(),
-    ]);
 });

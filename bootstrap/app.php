@@ -14,9 +14,10 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function ($middleware) {
-    $middleware->alias([
-        'dashboard.locale' => SetDashboardLocale::class,
-    ]);
+   $middleware->alias([
+    'dashboard.locale' => \App\Http\Middleware\SetDashboardLocale::class,
+    'auth.token'       => \App\Http\Middleware\AuthenticateWithToken::class,
+]);
 })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->shouldRenderJsonWhen(

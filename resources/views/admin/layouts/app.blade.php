@@ -57,6 +57,7 @@
                     ['route' => 'dashboard.products.index',    'label' => 'nav_products',   'icon' => '▢'],
                     ['route' => 'dashboard.categories.index',  'label' => 'nav_categories', 'icon' => '◫'],
                     ['route' => 'dashboard.banners.index',     'label' => 'nav_banners',    'icon' => '▭'],
+                    ['route' => 'dashboard.orders.index',      'label' => 'nav_orders',     'icon' => '☑'],
                     ['route' => 'dashboard.users.index',       'label' => 'nav_users',      'icon' => '☻'],
                 ];
             @endphp

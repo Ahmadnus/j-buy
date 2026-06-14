@@ -1,12 +1,10 @@
 <?php
 
-// No web routes — this is an API-only application.
-
-
 use App\Http\Controllers\Admin\Dashboard\DashboardAuthController;
 use App\Http\Controllers\Admin\Dashboard\DashboardBannerController;
 use App\Http\Controllers\Admin\Dashboard\DashboardCategoryController;
 use App\Http\Controllers\Admin\Dashboard\DashboardHomeController;
+use App\Http\Controllers\Admin\Dashboard\DashboardOrderController;
 use App\Http\Controllers\Admin\Dashboard\DashboardProductController;
 use App\Http\Controllers\Admin\Dashboard\DashboardUserController;
 use Illuminate\Support\Facades\Route;
@@ -60,6 +58,11 @@ Route::prefix('admin')->middleware('dashboard.locale')->group(function () {
         Route::get('banners/{id}/edit',        [DashboardBannerController::class, 'edit'])->name('dashboard.banners.edit');
         Route::put('banners/{id}',             [DashboardBannerController::class, 'update'])->name('dashboard.banners.update');
         Route::delete('banners/{id}',          [DashboardBannerController::class, 'destroy'])->name('dashboard.banners.destroy');
+
+        // Orders
+        Route::get('orders',                   [DashboardOrderController::class, 'index'])->name('dashboard.orders.index');
+        Route::get('orders/{id}',              [DashboardOrderController::class, 'show'])->name('dashboard.orders.show');
+        Route::put('orders/{id}/status',       [DashboardOrderController::class, 'updateStatus'])->name('dashboard.orders.status');
 
         // Users
         Route::get('users',                    [DashboardUserController::class, 'index'])->name('dashboard.users.index');
