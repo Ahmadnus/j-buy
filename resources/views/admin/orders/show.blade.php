@@ -174,9 +174,15 @@
                 <ul class="text-sm space-y-2">
                     @foreach ($order->statusLogs as $log)
                         @php
-                            {{-- These are already plain strings — converted in the controller --}}
-                            $fromVal = (string) ($log->from_status ?? '');
-                            $toVal   = (string) $log->to_status;
+                            $fromVal = $log->from_status_text
+                                ?? ($log->from_status instanceof \App\Enums\OrderStatus
+                                    ? $log->from_status->value
+                                    : (string) ($log->from_status ?? ''));
+
+                            $toVal = $log->to_status_text
+                                ?? ($log->to_status instanceof \App\Enums\OrderStatus
+                                    ? $log->to_status->value
+                                    : (string) ($log->to_status ?? ''));
                         @endphp
                         <li class="flex items-start justify-between gap-3 pb-2 border-b border-gray-100 last:border-0">
                             <div>
