@@ -178,10 +178,10 @@
                         <li class="flex items-start justify-between gap-3 pb-2 border-b border-gray-100 last:border-0">
                             <div>
                                 @if ($log->from_status)
-                                    <span class="text-gray-500">{{ __('dashboard.order_status_' . $log->from_status) }}</span>
+                                    <span class="text-gray-500">{{ __('dashboard.order_status_' . (is_string($log->from_status) ? $log->from_status : $log->from_status->value)) }}</span>
                                     <span class="text-gray-400 mx-1">→</span>
                                 @endif
-                                <span class="font-medium">{{ __('dashboard.order_status_' . $log->to_status) }}</span>
+                                <span class="font-medium">{{ __('dashboard.order_status_' . (is_string($log->to_status) ? $log->to_status : $log->to_status->value)) }}</span>
                             </div>
                             <span class="text-xs text-gray-500" dir="ltr">
                                 {{ $log->created_at->format('Y-m-d H:i') }}
