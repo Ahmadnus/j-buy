@@ -11,6 +11,17 @@ enum OrderStatus: string
     case Delivered = 'delivered';
     case Cancelled = 'cancelled';
 
+    /**
+     * Allows the enum to be used directly in string concatenation.
+     *
+     * PHP 8.1+ backed enums do NOT implement __toString() by default,
+     * which causes "Object could not be converted to string" when Blade
+     * tries to echo or concatenate an enum value. Adding this method
+     * fixes ALL places that use the enum in string context — including
+     * any already-compiled Blade cache files on the server.
+     */
+
+
     /** Arabic label — matches Flutter OrderStatusX.labelAr */
     public function labelAr(): string
     {

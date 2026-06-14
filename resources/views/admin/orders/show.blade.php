@@ -5,6 +5,14 @@
 
 @section('content')
 
+@php
+    // Safely get the status value as a plain string — works whether the
+    // model returns an enum object or a raw string.
+    $statusValue = $order->status instanceof \App\Enums\OrderStatus
+        ? $order->status->value
+        : (string) $order->status;
+@endphp
+
 <div class="flex items-center justify-between mb-6 flex-wrap gap-3">
     <div>
         <h2 class="text-2xl font-bold">
@@ -80,25 +88,21 @@
             </div>
         </div>
 
-        {{-- Notes (if any) --}}
+        {{-- Notes --}}
         @if ($order->customer_notes)
             <div class="bg-white border border-gray-200 rounded-lg p-5">
-                <div class="text-xs uppercase tracking-wide text-gray-600 mb-2">
-                    {{ __('dashboard.order_notes') }}
-                </div>
+                <div class="text-xs uppercase tracking-wide text-gray-600 mb-2">{{ __('dashboard.order_notes') }}</div>
                 <p class="text-sm">{{ $order->customer_notes }}</p>
             </div>
         @endif
     </div>
 
-    {{-- ── Right column: customer + address + status ──────────────────── --}}
+    {{-- ── Right column ────────────────────────────────────────────────── --}}
     <div class="space-y-5">
 
         {{-- Customer --}}
         <div class="bg-white border border-gray-200 rounded-lg p-5">
-            <div class="text-xs uppercase tracking-wide text-gray-600 mb-3">
-                {{ __('dashboard.order_customer_info') }}
-            </div>
+            <div class="text-xs uppercase tracking-wide text-gray-600 mb-3">{{ __('dashboard.order_customer_info') }}</div>
             <dl class="text-sm space-y-2">
                 <div class="flex justify-between gap-3">
                     <dt class="text-gray-600">{{ __('dashboard.order_customer') }}</dt>
@@ -113,9 +117,7 @@
 
         {{-- Address --}}
         <div class="bg-white border border-gray-200 rounded-lg p-5">
-            <div class="text-xs uppercase tracking-wide text-gray-600 mb-3">
-                {{ __('dashboard.order_delivery_address') }}
-            </div>
+            <div class="text-xs uppercase tracking-wide text-gray-600 mb-3">{{ __('dashboard.order_delivery_address') }}</div>
             <div class="text-sm space-y-1">
                 <div class="font-medium">{{ $order->customer_city }}</div>
                 <div class="text-gray-700">{{ $order->customer_address }}</div>
@@ -125,28 +127,23 @@
         {{-- Payment + status --}}
         <div class="bg-white border border-gray-200 rounded-lg p-5 space-y-3">
             <div>
-                <div class="text-xs uppercase tracking-wide text-gray-600 mb-1">
-                    {{ __('dashboard.order_payment_method') }}
-                </div>
+                <div class="text-xs uppercase tracking-wide text-gray-600 mb-1">{{ __('dashboard.order_payment_method') }}</div>
                 <div class="text-sm font-medium">
                     {{ $order->payment_method === 'cod' ? __('dashboard.payment_cod') : $order->payment_method }}
                 </div>
             </div>
             <div>
-                <div class="text-xs uppercase tracking-wide text-gray-600 mb-1">
-                    {{ __('dashboard.order_status') }}
-                </div>
+                <div class="text-xs uppercase tracking-wide text-gray-600 mb-1">{{ __('dashboard.order_status') }}</div>
+                {{-- $statusValue is a plain string computed in @php above --}}
                 <span class="inline-block px-3 py-1 text-sm border border-black rounded">
-                    {{ __('dashboard.order_status_' . $order->status->value) }}
+                    {{ __('dashboard.order_status_' . $statusValue) }}
                 </span>
             </div>
         </div>
 
         {{-- Status update form --}}
         <div class="bg-white border border-gray-200 rounded-lg p-5">
-            <div class="text-xs uppercase tracking-wide text-gray-600 mb-3">
-                {{ __('dashboard.order_update_status') }}
-            </div>
+            <div class="text-xs uppercase tracking-wide text-gray-600 mb-3">{{ __('dashboard.order_update_status') }}</div>
 
             @if (empty($allowedTransitions))
                 <p class="text-sm text-gray-500">{{ __('dashboard.no_change_possible') }}</p>
@@ -155,8 +152,11 @@
                     @csrf @method('PUT')
                     <select name="status" required class="w-full px-3 py-2 rounded-md text-sm">
                         @foreach ($allowedTransitions as $s)
-                            <option value="{{ $s->value }}">
-                                → {{ __('dashboard.order_status_' . $s->value) }}
+                            @php
+                                $sv = $s instanceof \App\Enums\OrderStatus ? $s->value : (string) $s;
+                            @endphp
+                            <option value="{{ $sv }}">
+                                → {{ __('dashboard.order_status_' . $sv) }}
                             </option>
                         @endforeach
                     </select>
@@ -170,18 +170,21 @@
         {{-- Status history --}}
         @if ($order->statusLogs->isNotEmpty())
             <div class="bg-white border border-gray-200 rounded-lg p-5">
-                <div class="text-xs uppercase tracking-wide text-gray-600 mb-3">
-                    {{ __('dashboard.order_status_history') }}
-                </div>
+                <div class="text-xs uppercase tracking-wide text-gray-600 mb-3">{{ __('dashboard.order_status_history') }}</div>
                 <ul class="text-sm space-y-2">
                     @foreach ($order->statusLogs as $log)
+                        @php
+                            {{-- These are already plain strings — converted in the controller --}}
+                            $fromVal = (string) ($log->from_status ?? '');
+                            $toVal   = (string) $log->to_status;
+                        @endphp
                         <li class="flex items-start justify-between gap-3 pb-2 border-b border-gray-100 last:border-0">
                             <div>
-                                @if ($log->from_status)
-                                    <span class="text-gray-500">{{ __('dashboard.order_status_' . (is_string($log->from_status) ? $log->from_status : $log->from_status->value)) }}</span>
+                                @if ($fromVal)
+                                    <span class="text-gray-500">{{ __('dashboard.order_status_' . $fromVal) }}</span>
                                     <span class="text-gray-400 mx-1">→</span>
                                 @endif
-                                <span class="font-medium">{{ __('dashboard.order_status_' . (is_string($log->to_status) ? $log->to_status : $log->to_status->value)) }}</span>
+                                <span class="font-medium">{{ __('dashboard.order_status_' . $toVal) }}</span>
                             </div>
                             <span class="text-xs text-gray-500" dir="ltr">
                                 {{ $log->created_at->format('Y-m-d H:i') }}
