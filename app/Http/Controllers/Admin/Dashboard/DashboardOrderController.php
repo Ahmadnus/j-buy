@@ -53,15 +53,17 @@ class DashboardOrderController extends Controller
         // Convert enum objects to plain strings on each log so the Blade
         // view can safely concatenate them without touching ->value.
         // This is the permanent fix — it works regardless of the view cache.
-        $order->statusLogs->transform(function ($log) {
-            $log->from_status = $log->from_status instanceof \App\Enums\OrderStatus
-                ? $log->from_status->value
-                : (string) ($log->from_status ?? '');
-            $log->to_status = $log->to_status instanceof \App\Enums\OrderStatus
-                ? $log->to_status->value
-                : (string) $log->to_status;
-            return $log;
-        });
+       $order->statusLogs->transform(function ($log) {
+    $log->from_status_text = $log->from_status instanceof \App\Enums\OrderStatus
+        ? $log->from_status->value
+        : $log->getRawOriginal('from_status');
+
+    $log->to_status_text = $log->to_status instanceof \App\Enums\OrderStatus
+        ? $log->to_status->value
+        : $log->getRawOriginal('to_status');
+
+    return $log;
+});
 
         return view('admin.orders.show', [
             'order'              => $order,
