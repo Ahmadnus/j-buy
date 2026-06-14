@@ -5,6 +5,7 @@ use App\Http\Controllers\Admin\Dashboard\DashboardBannerController;
 use App\Http\Controllers\Admin\Dashboard\DashboardCategoryController;
 use App\Http\Controllers\Admin\Dashboard\DashboardHomeController;
 use App\Http\Controllers\Admin\Dashboard\DashboardOrderController;
+use App\Http\Controllers\Admin\Dashboard\DashboardShippingController;
 use App\Http\Controllers\Admin\Dashboard\DashboardProductController;
 use App\Http\Controllers\Admin\Dashboard\DashboardUserController;
 use Illuminate\Support\Facades\Route;
@@ -65,6 +66,15 @@ Route::prefix('admin')->middleware('dashboard.locale')->group(function () {
         Route::put('orders/{id}/status',       [DashboardOrderController::class, 'updateStatus'])->name('dashboard.orders.status');
 
         // Users
+
+        // Shipping rates
+        Route::get('shipping',                 [DashboardShippingController::class, 'index'])->name('dashboard.shipping.index');
+        Route::get('shipping/create',          [DashboardShippingController::class, 'create'])->name('dashboard.shipping.create');
+        Route::post('shipping',                [DashboardShippingController::class, 'store'])->name('dashboard.shipping.store');
+        Route::get('shipping/{rate}/edit',     [DashboardShippingController::class, 'edit'])->name('dashboard.shipping.edit');
+        Route::put('shipping/{rate}',          [DashboardShippingController::class, 'update'])->name('dashboard.shipping.update');
+        Route::delete('shipping/{rate}',       [DashboardShippingController::class, 'destroy'])->name('dashboard.shipping.destroy');
+
         Route::get('users',                    [DashboardUserController::class, 'index'])->name('dashboard.users.index');
         Route::get('users/{id}/edit',          [DashboardUserController::class, 'edit'])->name('dashboard.users.edit');
         Route::put('users/{id}',               [DashboardUserController::class, 'update'])->name('dashboard.users.update');

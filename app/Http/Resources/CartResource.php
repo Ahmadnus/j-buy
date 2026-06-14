@@ -11,6 +11,15 @@ use Illuminate\Http\Resources\Json\JsonResource;
  *
  * Flutter reads:
  *   data.items[], data.subtotal, data.shipping_cost, data.total, data.item_count
+ *
+ * Note on shipping:
+ * The cart endpoint doesn't know which city the user will ship to (that's
+ * chosen at checkout), so we report a *default* shipping_cost based on the
+ * user's stored region — and the mobile app overrides this with the
+ * city-specific rate via GET /shipping-rates when the user picks a city.
+ * The authoritative shipping cost is computed server-side at order-placement
+ * time by OrderService, so even if the client sends a wrong total we charge
+ * the right amount.
  */
 class CartResource extends JsonResource
 {
@@ -19,7 +28,13 @@ class CartResource extends JsonResource
     {
         $items    = $this->cartItems;
         $subtotal = $items->sum(fn($i) => $i->total_price);
-        $shipping = 2.00;
+
+        // Pick shipping based on the user's stored region; falls back to 2.000
+        // (the original constant) if region is empty / not in the table.
+        $userRegion = $this->resource->region ?? '';
+        $shipping = $userRegion
+            ? (\App\Models\ShippingRate::priceFor($userRegion) ?? 2.000)
+            : 2.000;
 
         return [
             'items' => $items->map(fn($item) => [
