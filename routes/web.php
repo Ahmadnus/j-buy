@@ -6,6 +6,7 @@ use App\Http\Controllers\Admin\Dashboard\DashboardCategoryController;
 use App\Http\Controllers\Admin\Dashboard\DashboardHomeController;
 use App\Http\Controllers\Admin\Dashboard\DashboardOrderController;
 use App\Http\Controllers\Admin\Dashboard\DashboardShippingController;
+use App\Http\Controllers\Admin\Dashboard\DashboardComplaintController;
 use App\Http\Controllers\Admin\Dashboard\DashboardProductController;
 use App\Http\Controllers\Admin\Dashboard\DashboardUserController;
 use Illuminate\Support\Facades\Route;
@@ -66,6 +67,12 @@ Route::prefix('admin')->middleware('dashboard.locale')->group(function () {
         Route::put('orders/{id}/status',       [DashboardOrderController::class, 'updateStatus'])->name('dashboard.orders.status');
 
         // Users
+
+        // Complaints / support
+        Route::get('complaints',               [DashboardComplaintController::class, 'index'])->name('dashboard.complaints.index');
+        Route::get('complaints/{complaint}',   [DashboardComplaintController::class, 'show'])->name('dashboard.complaints.show');
+        Route::put('complaints/{complaint}',   [DashboardComplaintController::class, 'update'])->name('dashboard.complaints.update');
+
 
         // Shipping rates
         Route::get('shipping',                 [DashboardShippingController::class, 'index'])->name('dashboard.shipping.index');

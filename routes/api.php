@@ -9,6 +9,7 @@ use App\Http\Controllers\Api\OrderController;
 use App\Http\Controllers\Api\ProductController;
 use App\Http\Controllers\Api\ProfileController;
 use App\Http\Controllers\Api\ShippingRateController;
+use App\Http\Controllers\Api\ComplaintController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -61,7 +62,8 @@ Route::prefix('v1')->group(function () {
         // Orders
         Route::get('orders',      [OrderController::class, 'index']);
         Route::get('orders/{id}', [OrderController::class, 'show']);
-        Route::post('orders',     [OrderController::class, 'store']);
+        Route::post('complaints',         [ComplaintController::class, 'store']);
+    Route::post('orders',     [OrderController::class, 'store']);
 
         // Profile
         Route::get('profile',          [ProfileController::class, 'show']);

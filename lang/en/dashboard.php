@@ -192,4 +192,25 @@ return [
     'shipping_updated'         => 'Saved',
     'shipping_deleted'         => 'Area deleted',
 
+    // complaints
+    'nav_complaints'              => 'Support & Complaints',
+    'complaints_title'            => 'Support & Complaints',
+    'complaints_search'           => 'Search complaints...',
+    'complaints_empty'            => 'No complaints yet.',
+    'complaint_user'              => 'User',
+    'complaint_subject'           => 'Subject',
+    'complaint_message'           => 'Message',
+    'complaint_status'            => 'Status',
+    'complaint_date'              => 'Date',
+    'complaint_admin_notes'       => 'Admin Notes',
+    'complaint_detail_title'      => 'Complaint Detail',
+    'complaint_updated'           => 'Complaint updated',
+    'complaint_status_new'        => 'New',
+    'complaint_status_in_review'  => 'In Review',
+    'complaint_status_resolved'   => 'Resolved',
+    'complaint_status_closed'     => 'Closed',
+    'view'                        => 'View',
+    'search'                      => 'Search',
+    'back'                        => 'Back',
+
 ];

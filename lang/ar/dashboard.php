@@ -192,4 +192,25 @@ return [
     'shipping_updated'         => 'تم حفظ التعديلات',
     'shipping_deleted'         => 'تم حذف المنطقة',
 
+    // complaints
+    'nav_complaints'              => 'الشكاوى والدعم',
+    'complaints_title'            => 'الشكاوى والدعم',
+    'complaints_search'           => 'بحث في الشكاوى...',
+    'complaints_empty'            => 'لا توجد شكاوى بعد.',
+    'complaint_user'              => 'المستخدم',
+    'complaint_subject'           => 'الموضوع',
+    'complaint_message'           => 'الرسالة',
+    'complaint_status'            => 'الحالة',
+    'complaint_date'              => 'التاريخ',
+    'complaint_admin_notes'       => 'ملاحظات الإدارة',
+    'complaint_detail_title'      => 'تفاصيل الشكوى',
+    'complaint_updated'           => 'تم تحديث الشكوى',
+    'complaint_status_new'        => 'جديدة',
+    'complaint_status_in_review'  => 'قيد المراجعة',
+    'complaint_status_resolved'   => 'تم الحل',
+    'complaint_status_closed'     => 'مغلقة',
+    'view'                        => 'عرض',
+    'search'                      => 'بحث',
+    'back'                        => 'رجوع',
+
 ];
