@@ -142,7 +142,7 @@
             </div>
         </div>
 
-        {{-- ── Image upload ─────────────────────────────────────────────── --}}
+        {{-- ── Main image upload ────────────────────────────────────────────── --}}
         <div>
             <label class="block text-sm font-medium mb-1.5">{{ __('dashboard.product_image') }}</label>
 
@@ -159,6 +159,58 @@
             @if ($isEdit)
                 <p class="text-xs text-gray-500 mt-1">{{ __('dashboard.leave_blank') }}</p>
             @endif
+        </div>
+
+        {{-- ── Gallery / sub-images ────────────────────────────────────────── --}}
+        <div>
+            <label class="block text-sm font-medium mb-1.5">
+                {{ __('dashboard.product_gallery') }}
+                <span class="text-xs text-gray-500">({{ __('dashboard.optional') }})</span>
+            </label>
+            <p class="text-xs text-gray-500 mb-3">{{ __('dashboard.product_gallery_hint') }}</p>
+
+            {{-- Existing sub-images (edit mode only) --}}
+            @if ($isEdit && isset($product->images) && $product->images->isNotEmpty())
+                <div class="mb-4">
+                    <p class="text-xs font-medium text-gray-600 mb-2">
+                        {{ __('dashboard.current_gallery') }} ({{ $product->images->count() }})
+                    </p>
+                    <div class="flex flex-wrap gap-3">
+                        @foreach ($product->images as $img)
+                            <div class="relative group">
+                                <img src="{{ $img->image_url }}" alt=""
+                                     class="w-24 h-24 object-cover rounded-md border border-gray-200">
+                                {{-- Delete button — separate form to avoid interfering with main save --}}
+                                <form method="POST"
+                                      action="{{ route('dashboard.products.gallery.destroy', [$product->id, $img->id]) }}"
+                                      class="absolute inset-0 flex items-center justify-center
+                                             bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity rounded-md"
+                                      onsubmit="return confirm('{{ __('dashboard.confirm_delete') }}')">
+                                    @csrf @method('DELETE')
+                                    <button type="submit"
+                                            class="text-white text-xs bg-red-600 px-2 py-1 rounded font-medium">
+                                        {{ __('dashboard.gallery_remove') }}
+                                    </button>
+                                </form>
+                                <span class="block text-center text-xs text-gray-400 mt-1">
+                                    #{{ $img->sort_order + 1 }}
+                                </span>
+                            </div>
+                        @endforeach
+                    </div>
+                </div>
+            @elseif ($isEdit)
+                <p class="text-xs text-gray-400 italic mb-3">{{ __('dashboard.gallery_empty') }}</p>
+            @endif
+
+            {{-- Upload new sub-images --}}
+            <input type="file" name="gallery[]"
+                   accept="image/jpeg,image/png,image/webp"
+                   multiple
+                   class="w-full px-3 py-2 rounded-md text-sm bg-white">
+            <p class="text-xs text-gray-500 mt-1">
+                {{ __('dashboard.gallery_add_more') }} — JPG, PNG, WEBP — max 5 MB each
+            </p>
         </div>
 
         {{-- ── Colors — optional, from predefined dropdown ──────────────── --}}

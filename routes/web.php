@@ -42,6 +42,7 @@ Route::prefix('admin')->middleware('dashboard.locale')->group(function () {
         Route::get('products/create',          [DashboardProductController::class, 'create'])->name('dashboard.products.create');
         Route::post('products',                [DashboardProductController::class, 'store'])->name('dashboard.products.store');
         Route::get('products/{id}/edit',       [DashboardProductController::class, 'edit'])->name('dashboard.products.edit');
+        Route::delete('products/{product}/gallery/{image}', [DashboardProductController::class, 'destroyGalleryImage'])->name('dashboard.products.gallery.destroy');
         Route::put('products/{id}',            [DashboardProductController::class, 'update'])->name('dashboard.products.update');
         Route::delete('products/{id}',         [DashboardProductController::class, 'destroy'])->name('dashboard.products.destroy');
 

@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Category;
 use App\Models\Product;
 use App\Models\ProductColor;
+use App\Models\ProductImage;
 use App\Models\ProductSize;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -61,7 +62,7 @@ class DashboardProductController extends Controller
 
     public function edit(int $id)
     {
-        $product = Product::with(['colors', 'sizes'])->findOrFail($id);
+        $product = Product::with(['colors', 'sizes', 'images'])->findOrFail($id);
 
         // Selected colors: keyed by hex so the checkbox state survives edits.
         $selectedColors = $product->colors->pluck('hex_code')->all();
@@ -89,6 +90,7 @@ class DashboardProductController extends Controller
 
         $product = Product::create($data);
         $this->syncVariants($product, $request);
+        $this->appendGalleryImages($product, $request);
 
         return redirect()->route('dashboard.products.index')
                          ->with('success', __('dashboard.created_success'));
@@ -105,6 +107,7 @@ class DashboardProductController extends Controller
 
         $product->update($data);
         $this->syncVariants($product, $request);
+        $this->appendGalleryImages($product, $request);
 
         return redirect()->route('dashboard.products.index')
                          ->with('success', __('dashboard.updated_success'));
@@ -138,11 +141,11 @@ class DashboardProductController extends Controller
         ]) + ['is_active' => $request->boolean('is_active')];
     }
 
-    private function storeImage($file): string
+    private function storeImage($file, string $folder = 'products'): string
     {
         $name = Str::random(20) . '.' . $file->getClientOriginalExtension();
-        $file->storeAs('products', $name, 'public');
-        return Storage::disk('public')->url('products/' . $name);
+        $file->storeAs($folder, $name, 'public');
+        return Storage::disk('public')->url($folder . '/' . $name);
     }
 
     /**
@@ -180,4 +183,63 @@ class DashboardProductController extends Controller
             ]);
         }
     }
+
+    // ── Gallery images ─────────────────────────────────────────────────────────
+
+    /**
+     * Append any newly uploaded gallery images to product_images.
+     * Existing images are kept — admin deletes individual images via the
+     * DELETE /admin/products/{product}/gallery/{image} route.
+     */
+    private function appendGalleryImages(Product $product, Request $request): void
+    {
+        if (! $request->hasFile('gallery')) {
+            return;
+        }
+
+        $currentMax = $product->images()->max('sort_order') ?? -1;
+
+        foreach ($request->file('gallery') as $i => $file) {
+            $url = $this->storeImage($file, 'product-gallery');
+            ProductImage::create([
+                'product_id' => $product->id,
+                'image_url'  => $url,
+                'sort_order' => $currentMax + $i + 1,
+            ]);
+        }
+    }
+
+    /**
+     * DELETE /admin/products/{product}/gallery/{image}
+     * Removes a single sub-image row and deletes its file from storage.
+     */
+    public function destroyGalleryImage(int $productId, int $imageId)
+    {
+        $product = Product::findOrFail($productId);
+        $image   = ProductImage::where('product_id', $product->id)
+                               ->findOrFail($imageId);
+
+        // Delete the physical file if stored locally.
+        $this->deleteImageFile($image->image_url);
+        $image->delete();
+
+        return redirect()
+            ->route('dashboard.products.edit', $productId)
+            ->with('success', __('dashboard.gallery_image_removed'));
+    }
+
+    /**
+     * Attempts to delete a locally-stored image file.
+     * Silently no-ops for external / CDN URLs.
+     */
+    private function deleteImageFile(string $url): void
+    {
+        // The URL looks like http://domain/storage/products/xxx.jpg
+        // We need to convert it back to a relative storage path.
+        $storagePath = str_replace(Storage::disk('public')->url('/'), '', $url);
+        if (Storage::disk('public')->exists($storagePath)) {
+            Storage::disk('public')->delete($storagePath);
+        }
+    }
+
 }

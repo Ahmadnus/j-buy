@@ -13,7 +13,8 @@ class ProductDetailResource extends JsonResource
 {
     public function toArray(Request $request): array
     {
-        // Gallery: prefer Spatie Media Library, fallback to product_images table
+        // Build image_urls gallery — Spatie Media Library first, then product_images table.
+        // The main image_url is always prepended so it appears first in the slider.
         $galleryUrls = $this->getMedia('product-gallery')
             ->map(fn($m) => $m->getFullUrl())
             ->values()
@@ -26,10 +27,17 @@ class ProductDetailResource extends JsonResource
                 ->toArray();
         }
 
-        // Ensure primary image_url is first in gallery if gallery is empty
-        if (empty($galleryUrls) && $this->image_url) {
-            $galleryUrls = [$this->image_url];
+        // Always prepend the primary image_url so existing products that have
+        // no sub-images still show one image in the slider. When sub-images
+        // exist, the main image comes first followed by the gallery images.
+        if ($this->image_url) {
+            array_unshift($galleryUrls, $this->image_url);
+            // Deduplicate in case image_url was already included in the gallery
+            $galleryUrls = array_values(array_unique($galleryUrls));
         }
+
+        // Safety: if somehow we still have nothing, return an empty array.
+        // Flutter's ProductImageCarousel handles the empty case with a placeholder icon.
 
         return [
             'id'           => $this->id,

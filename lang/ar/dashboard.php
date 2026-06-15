@@ -213,4 +213,13 @@ return [
     'search'                      => 'بحث',
     'back'                        => 'رجوع',
 
+    // product gallery
+    'product_gallery'           => 'معرض الصور (sub-images)',
+    'product_gallery_hint'      => 'ارفع صوراً إضافية للمنتج (الصورة الرئيسية منفصلة). يمكنك رفع أكثر من صورة في آن واحد.',
+    'current_gallery'           => 'الصور الحالية',
+    'gallery_image_removed'     => 'تم حذف الصورة',
+    'gallery_add_more'          => 'إضافة صور',
+    'gallery_remove'            => 'حذف',
+    'gallery_empty'             => 'لا توجد صور إضافية',
+
 ];

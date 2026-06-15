@@ -213,4 +213,13 @@ return [
     'search'                      => 'Search',
     'back'                        => 'Back',
 
+    // product gallery
+    'product_gallery'           => 'Image Gallery (sub-images)',
+    'product_gallery_hint'      => 'Upload additional product images (main image is separate). You can select multiple files at once.',
+    'current_gallery'           => 'Current Gallery',
+    'gallery_image_removed'     => 'Image removed',
+    'gallery_add_more'          => 'Add Images',
+    'gallery_remove'            => 'Remove',
+    'gallery_empty'             => 'No additional images yet',
+
 ];
