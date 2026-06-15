@@ -8,14 +8,15 @@ use Illuminate\Http\JsonResponse;
 /**
  * Base controller providing the exact response envelope from the API spec:
  *   { "success": true, "message": "...", "data": { } }
+ *   { "success": false, "message": "...", "errors": {} }
  */
 abstract class ApiController extends Controller
 {
     protected function success(mixed $data = null, string $message = '', int $status = 200): JsonResponse
     {
         $payload = ['success' => true];
-        if ($message)  $payload['message'] = $message;
-        if ($data !== null) $payload['data'] = $data;
+        if ($message)       $payload['message'] = $message;
+        if ($data !== null) $payload['data']    = $data;
 
         return response()->json($payload, $status);
     }
@@ -51,5 +52,15 @@ abstract class ApiController extends Controller
     protected function forbidden(string $message = 'غير مصرح لك بهذا الإجراء'): JsonResponse
     {
         return $this->error($message, 403);
+    }
+
+    /**
+     * Returns the Arabic string by default.
+     * Returns the English string when Accept-Language starts with "en".
+     */
+    protected function localize(string $ar, string $en): string
+    {
+        $lang = (string) request()->header('Accept-Language', 'ar');
+        return str_starts_with($lang, 'en') ? $en : $ar;
     }
 }

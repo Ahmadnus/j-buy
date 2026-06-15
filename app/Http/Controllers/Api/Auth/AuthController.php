@@ -2,7 +2,8 @@
 
 namespace App\Http\Controllers\Api\Auth;
 
-use App\Http\Controllers\Api\ApiController;
+use App\Http\Controllers\Controller;
+use App\Http\Traits\ApiResponses;
 use App\Http\Requests\Auth\ForgotPasswordRequest;
 use App\Http\Requests\Auth\LoginRequest;
 use App\Http\Requests\Auth\RegisterRequest;
@@ -15,18 +16,12 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 
-/**
- * Phone-based authentication.
- *
- * Account identifier is the user's Jordanian phone number. Registration
- * captures name, username, phone, region, and password — no email.
- * Login accepts only phone + password.
- */
-class AuthController extends ApiController
+class AuthController extends Controller
 {
+    use ApiResponses;
+
     public function __construct(private AuthService $authService) {}
 
-    // ── POST /auth/register ───────────────────────────────────────────────────
     public function register(RegisterRequest $request): JsonResponse
     {
         $user = User::create([
@@ -38,21 +33,25 @@ class AuthController extends ApiController
         ]);
 
         $token = $user->createToken('mobile')->plainTextToken;
+        $isEn  = str_starts_with((string) $request->header('Accept-Language', 'ar'), 'en');
 
         return $this->created([
             'token'      => $token,
             'token_type' => 'Bearer',
             'user'       => new UserResource($user),
-        ], 'تم إنشاء الحساب بنجاح');
+        ], $isEn ? 'Account created successfully' : 'تم إنشاء الحساب بنجاح');
     }
 
-    // ── POST /auth/login ──────────────────────────────────────────────────────
     public function login(LoginRequest $request): JsonResponse
     {
         $user = User::where('phone', $request->phone)->first();
+        $isEn = str_starts_with((string) $request->header('Accept-Language', 'ar'), 'en');
 
         if (! $user || ! Hash::check($request->password, $user->password)) {
-            return $this->error('بيانات تسجيل الدخول غير صحيحة', 401);
+            return $this->error(
+                $isEn ? 'Invalid phone number or password' : 'بيانات تسجيل الدخول غير صحيحة',
+                401
+            );
         }
 
         $token = $user->createToken('mobile')->plainTextToken;
@@ -64,41 +63,33 @@ class AuthController extends ApiController
         ]);
     }
 
-    // ── POST /auth/logout ─────────────────────────────────────────────────────
     public function logout(Request $request): JsonResponse
     {
         $request->user()->tokens()->where('name', 'mobile')->delete();
-        return $this->success(null, 'تم تسجيل الخروج بنجاح');
+        $isEn = str_starts_with((string) $request->header('Accept-Language', 'ar'), 'en');
+        return $this->success(null, $isEn ? 'Logged out successfully' : 'تم تسجيل الخروج بنجاح');
     }
 
-    // ── GET /auth/me ──────────────────────────────────────────────────────────
     public function me(Request $request): JsonResponse
     {
         return $this->success(new UserResource($request->user()));
     }
 
-    // ── POST /auth/forgot-password ────────────────────────────────────────────
-    // Generates a 6-digit OTP. In a real deployment this would be sent via SMS.
-    // For now we log the OTP server-side and ALSO return it in non-production
-    // environments so QA can test without an SMS provider.
     public function forgotPassword(ForgotPasswordRequest $request): JsonResponse
     {
-        $user = User::where('phone', $request->phone)->firstOrFail();
         $otp  = $this->authService->generateResetOtpForPhone($request->phone);
+        $isEn = str_starts_with((string) $request->header('Accept-Language', 'ar'), 'en');
 
-        // TODO: integrate an SMS provider (Twilio, MessageBird, local Jordan SMS gateway).
-        // For now log so it appears in storage/logs/laravel.log during development.
         Log::info("Password reset OTP for {$request->phone}: {$otp}");
 
         $data = app()->environment('production') ? null : ['otp' => $otp];
 
         return $this->success(
             $data,
-            'تم إرسال رمز إعادة تعيين كلمة المرور إلى رقم هاتفك'
+            $isEn ? 'Password reset code sent to your phone' : 'تم إرسال رمز إعادة تعيين كلمة المرور إلى رقم هاتفك'
         );
     }
 
-    // ── POST /auth/reset-password ─────────────────────────────────────────────
     public function resetPassword(ResetPasswordRequest $request): JsonResponse
     {
         $success = $this->authService->resetPasswordWithOtpByPhone(
@@ -107,10 +98,15 @@ class AuthController extends ApiController
             $request->password
         );
 
+        $isEn = str_starts_with((string) $request->header('Accept-Language', 'ar'), 'en');
+
         if (! $success) {
-            return $this->error('رمز إعادة التعيين غير صحيح أو منتهي الصلاحية', 422);
+            return $this->error(
+                $isEn ? 'Invalid or expired reset code' : 'رمز إعادة التعيين غير صحيح أو منتهي الصلاحية',
+                422
+            );
         }
 
-        return $this->success(null, 'تم تغيير كلمة المرور بنجاح');
+        return $this->success(null, $isEn ? 'Password changed successfully' : 'تم تغيير كلمة المرور بنجاح');
     }
 }

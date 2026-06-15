@@ -2,39 +2,34 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Http\Controllers\Controller;
+use App\Http\Traits\ApiResponses;
+use App\Http\Requests\Api\StoreComplaintRequest;
 use App\Models\Complaint;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 
-class ComplaintController extends ApiController
+class ComplaintController extends Controller
 {
+    use ApiResponses;
+
     /**
      * POST /api/v1/complaints
      * Auth: Required
-     *
-     * Saves a support complaint from the mobile app.
-     * The user_id is taken from the authenticated token — never from the
-     * request body — so a user can never file a complaint on behalf of
-     * someone else.
      */
-    public function store(Request $request): JsonResponse
+    public function store(StoreComplaintRequest $request): JsonResponse
     {
-        $data = $request->validate([
-            'subject' => 'required|string|max:255',
-            'message' => 'required|string|max:5000',
-        ]);
-
         $complaint = Complaint::create([
             'user_id' => $request->user()->id,
-            'subject' => $data['subject'],
-            'message' => $data['message'],
+            'subject' => $request->validated('subject'),
+            'message' => $request->validated('message'),
             'status'  => 'new',
         ]);
 
-        return response()->json([
-            'success' => true,
-            'message' => 'تم إرسال رسالتك بنجاح. سيتواصل معك فريق الدعم قريباً.',
-            'data'    => ['id' => $complaint->id],
-        ], 201);
+        $isEn    = str_starts_with((string) $request->header('Accept-Language', 'ar'), 'en');
+        $message = $isEn
+            ? 'Your message was sent successfully. Support will contact you soon.'
+            : 'تم إرسال رسالتك بنجاح. سيتواصل معك فريق الدعم قريباً.';
+
+        return $this->created(['id' => $complaint->id], $message);
     }
 }

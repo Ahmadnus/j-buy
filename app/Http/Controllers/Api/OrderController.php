@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Http\Controllers\Controller;
+use App\Http\Traits\ApiResponses;
 use App\Http\Requests\Order\PlaceOrderRequest;
 use App\Http\Resources\OrderDetailResource;
 use App\Http\Resources\OrderResource;
@@ -10,11 +12,11 @@ use App\Services\OrderService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
-class OrderController extends ApiController
+class OrderController extends Controller
 {
-    public function __construct(private OrderService $orderService) {}
+    use ApiResponses;
 
-    // ── GET /orders ───────────────────────────────────────────────────────────
+    public function __construct(private OrderService $orderService) {}
 
     public function index(Request $request): JsonResponse
     {
@@ -34,8 +36,6 @@ class OrderController extends ApiController
         ]);
     }
 
-    // ── GET /orders/{id} ──────────────────────────────────────────────────────
-
     public function show(Request $request, int $id): JsonResponse
     {
         $order = Order::with('items')
@@ -49,8 +49,6 @@ class OrderController extends ApiController
         return $this->success(new OrderDetailResource($order));
     }
 
-    // ── POST /orders ──────────────────────────────────────────────────────────
-
     public function store(PlaceOrderRequest $request): JsonResponse
     {
         $order = $this->orderService->placeOrder(
@@ -58,9 +56,9 @@ class OrderController extends ApiController
             $request->validated()
         );
 
-        return $this->created(
-            new OrderDetailResource($order),
-            'تم تأكيد طلبك بنجاح'
-        );
+        $isEn = str_starts_with((string) $request->header('Accept-Language', 'ar'), 'en');
+        $msg  = $isEn ? 'Your order has been placed successfully' : 'تم تأكيد طلبك بنجاح';
+
+        return $this->created(new OrderDetailResource($order), $msg);
     }
 }

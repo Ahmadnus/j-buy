@@ -2,15 +2,17 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Http\Controllers\Controller;
+use App\Http\Traits\ApiResponses;
 use App\Http\Resources\ProductResource;
 use App\Models\Favorite;
 use App\Models\Product;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
-class FavoriteController extends ApiController
+class FavoriteController extends Controller
 {
-    // ── GET /favorites ────────────────────────────────────────────────────────
+    use ApiResponses;
 
     public function index(Request $request): JsonResponse
     {
@@ -24,8 +26,6 @@ class FavoriteController extends ApiController
 
         return $this->success(ProductResource::collection($products));
     }
-
-    // ── POST /favorites/{productId} — toggle ──────────────────────────────────
 
     public function toggle(Request $request, int $productId): JsonResponse
     {
@@ -52,8 +52,6 @@ class FavoriteController extends ApiController
             'product_id'  => $productId,
         ]);
     }
-
-    // ── DELETE /favorites/{productId} ─────────────────────────────────────────
 
     public function destroy(Request $request, int $productId): JsonResponse
     {

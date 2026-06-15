@@ -2,15 +2,17 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Http\Controllers\Controller;
+use App\Http\Traits\ApiResponses;
 use App\Http\Resources\ProductDetailResource;
 use App\Http\Resources\ProductResource;
 use App\Models\Product;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
-class ProductController extends ApiController
+class ProductController extends Controller
 {
-    // ── GET /products ─────────────────────────────────────────────────────────
+    use ApiResponses;
 
     public function index(Request $request): JsonResponse
     {
@@ -23,11 +25,9 @@ class ProductController extends ApiController
         if ($request->filled('category')) {
             $query->forCategory($request->category);
         }
-
         if ($request->filled('search')) {
             $query->search($request->search);
         }
-
         if ($request->filled('badge')) {
             $query->where('badge', $request->badge);
         }
@@ -45,8 +45,6 @@ class ProductController extends ApiController
             ],
         ]);
     }
-
-    // ── GET /products/{id} ────────────────────────────────────────────────────
 
     public function show(Request $request, int $id): JsonResponse
     {

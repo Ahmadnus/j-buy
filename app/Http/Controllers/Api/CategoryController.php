@@ -1,11 +1,19 @@
 <?php
+
 namespace App\Http\Controllers\Api;
+
+use App\Http\Controllers\Controller;
+use App\Http\Traits\ApiResponses;
 use App\Http\Resources\CategoryResource;
 use App\Models\Category;
 use Illuminate\Http\JsonResponse;
 
-class CategoryController extends ApiController {
-    public function index(): JsonResponse {
+class CategoryController extends Controller
+{
+    use ApiResponses;
+
+    public function index(): JsonResponse
+    {
         $categories = Category::active()->get();
         return $this->success(CategoryResource::collection($categories));
     }

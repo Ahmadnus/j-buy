@@ -2,26 +2,27 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Http\Controllers\Controller;
+
 use App\Http\Requests\Cart\AddToCartRequest;
 use App\Http\Requests\Cart\UpdateCartRequest;
 use App\Http\Resources\CartResource;
 use App\Services\CartService;
+use App\Http\Traits\ApiResponses;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
-class CartController extends ApiController
+class CartController extends Controller
 {
-    public function __construct(private CartService $cartService) {}
+    use ApiResponses;
 
-    // ── GET /cart ─────────────────────────────────────────────────────────────
+    public function __construct(private CartService $cartService) {}
 
     public function index(Request $request): JsonResponse
     {
         $user = $this->cartService->loadCart($request->user());
         return $this->success(new CartResource($user));
     }
-
-    // ── POST /cart ────────────────────────────────────────────────────────────
 
     public function store(AddToCartRequest $request): JsonResponse
     {
@@ -30,8 +31,6 @@ class CartController extends ApiController
         $user = $this->cartService->loadCart($user);
         return $this->success(new CartResource($user));
     }
-
-    // ── PUT /cart/{id} ────────────────────────────────────────────────────────
 
     public function update(UpdateCartRequest $request, int $id): JsonResponse
     {
@@ -46,8 +45,6 @@ class CartController extends ApiController
         return $this->success(new CartResource($user));
     }
 
-    // ── DELETE /cart/{id} ─────────────────────────────────────────────────────
-
     public function destroy(Request $request, int $id): JsonResponse
     {
         $user = $request->user();
@@ -55,8 +52,6 @@ class CartController extends ApiController
         $user = $this->cartService->loadCart($user);
         return $this->success(new CartResource($user));
     }
-
-    // ── DELETE /cart (clear all) ──────────────────────────────────────────────
 
     public function clear(Request $request): JsonResponse
     {
