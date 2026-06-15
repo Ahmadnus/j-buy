@@ -14,8 +14,8 @@ class PlaceOrderRequest extends FormRequest {
             'payment_method'         => 'required|in:cod',
             'items'                  => 'required|array|min:1',
             'items.*.product_id'     => 'required|integer|exists:products,id',
-            'items.*.selected_size'  => 'required|string',
-            'items.*.selected_color' => 'required|string',
+            'items.*.selected_size'  => 'nullable|string',
+            'items.*.selected_color' => 'nullable|string',
             'items.*.quantity'       => 'required|integer|min:1',
         ];
     }
