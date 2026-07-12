@@ -26,7 +26,9 @@ class UpdateProfileRequest extends FormRequest
             'email'                 => ['sometimes','nullable','email',
                                         "unique:users,email,{$userId}"],
             'address'               => 'nullable|string',
-            'region'                => 'nullable|string|max:100',
+            // Must be a canonical city name from shipping_rates so region-based
+            // delivery fee lookups always resolve.
+            'region'                => 'nullable|string|max:100|exists:shipping_rates,city_ar',
             'notifications_enabled' => 'sometimes|boolean',
         ];
     }
@@ -39,6 +41,7 @@ class UpdateProfileRequest extends FormRequest
                 ? 'Please enter a valid Jordanian phone number (e.g. 0791234567 or +962791234567)'
                 : 'يرجى إدخال رقم هاتف أردني صالح (مثال: 0791234567 أو +962791234567)',
             'phone.unique' => $isEn ? 'Phone number is already in use' : 'رقم الهاتف مستخدم مسبقاً',
+            'region.exists' => $isEn ? 'The selected region is not valid' : 'المنطقة المختارة غير صالحة',
         ];
     }
 

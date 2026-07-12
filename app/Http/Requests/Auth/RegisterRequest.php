@@ -20,7 +20,7 @@ class RegisterRequest extends FormRequest
         'name_ar' => 'required|max:255',
         'username' => 'required|max:100|unique:users,username',
         'phone' => 'required|unique:users,phone',
-        'region' => 'required',
+        'region' => 'required|string|max:100|exists:shipping_rates,city_ar',
         'password' => 'required|min:6|confirmed',
     ];
 }
@@ -34,6 +34,7 @@ class RegisterRequest extends FormRequest
         'phone.required' => 'رقم الهاتف مطلوب',
         'phone.unique' => 'رقم الهاتف مسجل مسبقاً',
         'region.required' => 'المنطقة مطلوبة',
+        'region.exists' => 'المنطقة المختارة غير صالحة',
         'password.required' => 'كلمة المرور مطلوبة',
         'password.min' => 'كلمة المرور يجب أن تكون 6 أحرف على الأقل',
         'password.confirmed' => 'تأكيد كلمة المرور غير مطابق',

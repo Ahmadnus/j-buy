@@ -25,6 +25,7 @@ class User extends Authenticatable implements HasMedia
         'email',
         'phone',
         'address',
+        'region',
         'avatar_url',
         'membership_tier',
         'notifications_enabled',
