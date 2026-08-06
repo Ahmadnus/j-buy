@@ -2,8 +2,8 @@
 
 return [
     // Branding
-    'app_name'             => 'جيه-باي',
-    'dashboard_name'       => 'لوحة تحكم جيه-باي',
+    'app_name'             => 'وند ستور',
+    'dashboard_name'       => 'لوحة تحكم وند ستور',
 
     // Common
     'language'             => 'اللغة',

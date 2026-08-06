@@ -2,8 +2,8 @@
 
 return [
     // Branding
-    'app_name'             => 'J-Buy',
-    'dashboard_name'       => 'J-Buy Admin',
+    'app_name'             => 'Windstore',
+    'dashboard_name'       => 'Windstore Admin',
 
     // Common
     'language'             => 'Language',
