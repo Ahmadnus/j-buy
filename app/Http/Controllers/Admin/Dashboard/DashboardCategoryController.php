@@ -65,7 +65,11 @@ class DashboardCategoryController extends Controller
         return $request->validate([
             'name_ar'    => 'required|string|max:255',
             'name_en'    => 'required|string|max:255',
-            'slug'       => "required|string|max:100|unique:categories,slug,{$id}|regex:/^[a-z0-9_-]+$/i",
+            // Array form so a '|' added to the pattern later cannot be
+            // misread as a rule separator.
+            'slug'       => ['required', 'string', 'max:100',
+                             "unique:categories,slug,{$id}",
+                             'regex:/^[a-z0-9_-]+$/i'],
             'icon'       => 'nullable|string|max:100',
             'sort_order' => 'nullable|integer|min:0',
             'is_active'  => 'nullable|boolean',
