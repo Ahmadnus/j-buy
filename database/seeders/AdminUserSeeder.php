@@ -5,7 +5,6 @@ namespace Database\Seeders;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
-use RuntimeException;
 use Spatie\Permission\Models\Role;
 
 /**
@@ -20,7 +19,12 @@ use Spatie\Permission\Models\Role;
  *   ADMIN_USERNAME=admin          # optional
  *   ADMIN_NAME_AR=المدير           # optional
  *
- * Then:  php artisan db:seed --class=AdminUserSeeder
+ * Then either of:
+ *   php artisan db:seed --class=AdminUserSeeder
+ *   php artisan db:seed                          # runs as part of the chain
+ *
+ * Without ADMIN_EMAIL and ADMIN_PASSWORD it prints a warning and skips, so a
+ * plain db:seed still succeeds.
  *
  * Re-running is safe: the account is matched on email and updated in place,
  * so this doubles as a password reset. It never touches other users.
@@ -32,12 +36,16 @@ class AdminUserSeeder extends Seeder
         $email    = env('ADMIN_EMAIL');
         $password = env('ADMIN_PASSWORD');
 
-        // Fail loudly rather than silently seeding a guessable default. A
-        // hardcoded fallback password is how test credentials reach production.
+        // Skip rather than invent a default. This seeder runs as part of the
+        // full `db:seed` chain, so throwing here would break seeding for anyone
+        // who has not set these — but falling back to a guessable password is
+        // how test credentials reach production. Skipping is the safe middle.
         if (blank($email) || blank($password)) {
-            throw new RuntimeException(
-                'ADMIN_EMAIL and ADMIN_PASSWORD must be set in .env before running AdminUserSeeder.'
+            $this->command->warn(
+                'AdminUserSeeder skipped: set ADMIN_EMAIL and ADMIN_PASSWORD in .env to create the admin account.'
             );
+
+            return;
         }
 
         // The dashboard authenticates over the session guard, so the role must

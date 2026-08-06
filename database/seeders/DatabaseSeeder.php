@@ -12,6 +12,8 @@ class DatabaseSeeder extends Seeder
             CategorySeeder::class,
             BannerSeeder::class,
             ProductSeeder::class,
+            // Skips itself unless ADMIN_EMAIL and ADMIN_PASSWORD are set.
+            AdminUserSeeder::class,
         ]);
     }
 }
