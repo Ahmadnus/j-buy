@@ -24,6 +24,8 @@ class OrderResource extends JsonResource
             'shipping_cost' => number_format((float) $this->shipping_cost, 2, '.', ''),
             'items_count'   => $this->items_count,
             'payment_method' => $this->payment_method,
+            'fulfillment_type' => $this->fulfillment_type ?? 'delivery',
+            'branch_name'   => $this->branch_name,
         ];
     }
 }

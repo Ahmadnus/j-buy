@@ -18,8 +18,8 @@ class Product extends Model implements HasMedia
     use HasFactory, SoftDeletes, InteractsWithMedia;
 
     protected $fillable = [
-        'category_id', 'name_ar', 'name_en', 'product_code',
-        'price', 'currency', 'image_url', 'material_ar',
+        'category_id', 'phone_model_id', 'name_ar', 'name_en', 'product_code',
+        'price', 'stock', 'currency', 'image_url', 'material_ar',
         'material_en',
         'badge',
         'badge_en', 'size_range', 'rating', 'review_count', 'is_active',
@@ -31,6 +31,7 @@ class Product extends Model implements HasMedia
             'price'        => 'decimal:2',
             'rating'       => 'decimal:2',
             'review_count' => 'integer',
+            'stock'        => 'integer',
             'is_active'    => 'boolean',
             'deleted_at'   => 'datetime',
         ];
@@ -48,6 +49,11 @@ class Product extends Model implements HasMedia
     public function category(): BelongsTo
     {
         return $this->belongsTo(Category::class);
+    }
+
+    public function phoneModel(): BelongsTo
+    {
+        return $this->belongsTo(PhoneModel::class);
     }
 
     public function images(): HasMany

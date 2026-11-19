@@ -14,7 +14,9 @@ class CategoryController extends Controller
 
     public function index(): JsonResponse
     {
-        $categories = Category::active()->get();
+        $categories = Category::active()
+            ->withCount(['phoneModels' => fn ($q) => $q->where('is_active', true)])
+            ->get();
         return $this->success(CategoryResource::collection($categories));
     }
 }

@@ -30,12 +30,15 @@ class ProductController extends Controller
         $userId = $request->user()?->id;
 
         $query = Product::active()
-                        ->with('category')
+                        ->with(['category', 'phoneModel'])
                         ->withFavoriteStatus($userId);
 
         // ── Filters ───────────────────────────────────────────────────────────
         if ($request->filled('category')) {
             $query->forCategory($request->category);
+        }
+        if ($request->filled('phone_model')) {
+            $query->where('phone_model_id', $request->integer('phone_model'));
         }
         if ($request->filled('search')) {
             $query->search($request->search);
@@ -79,7 +82,7 @@ class ProductController extends Controller
         $userId = $request->user()?->id;
 
         $product = Product::active()
-                          ->with(['category', 'images', 'colors', 'sizes'])
+                          ->with(['category', 'phoneModel', 'images', 'colors', 'sizes'])
                           ->withFavoriteStatus($userId)
                           ->find($id);
 

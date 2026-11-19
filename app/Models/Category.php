@@ -5,10 +5,13 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Builder;
 
 class Category extends Model {
-    protected $fillable = ['name_ar','name_en','slug','icon','sort_order','is_active'];
+    protected $fillable = ['name_ar','name_en','slug','icon','image_url','sort_order','is_active'];
     protected function casts(): array { return ['is_active' => 'boolean']; }
 
     public function products(): HasMany { return $this->hasMany(Product::class); }
+
+    /** Phone models under this brand (e.g. Apple → iPhone 13, iPhone 14 …). */
+    public function phoneModels(): HasMany { return $this->hasMany(PhoneModel::class); }
 
     public function scopeActive(Builder $query): Builder {
         return $query->where('is_active', true)->orderBy('sort_order');

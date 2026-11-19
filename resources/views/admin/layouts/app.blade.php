@@ -5,40 +5,62 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', __('dashboard.dashboard_name')) — {{ __('dashboard.app_name') }}</title>
+    <link rel="icon" type="image/png" href="{{ asset('images/logo-icon.png') }}">
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
+        /* White & maroon (خمري) brand palette */
+        :root {
+            --brand:       #8B1538;
+            --brand-dark:  #5E0B24;
+            --brand-light: #B23A5E;
+            --brand-soft:  #FBEEF2;
+            --ink:         #1F1A1C;
+        }
         body {
             font-family: {{ app()->getLocale() === 'ar' ? "'Cairo'" : "'Inter'" }}, sans-serif;
-            background: #FFFFFF;
-            color: #000000;
+            background: #FAF8F9;
+            color: var(--ink);
         }
-        /* Black & white only — no accents */
         .btn-primary {
-            background: #000000; color: #FFFFFF;
-            transition: opacity .15s ease;
+            background: var(--brand); color: #FFFFFF;
+            transition: background .15s ease;
         }
-        .btn-primary:hover { opacity: .85; }
+        .btn-primary:hover { background: var(--brand-dark); }
         .btn-secondary {
-            background: #FFFFFF; color: #000000; border: 1px solid #000000;
+            background: #FFFFFF; color: var(--brand); border: 1px solid var(--brand);
         }
-        .btn-secondary:hover { background: #F5F5F5; }
+        .btn-secondary:hover { background: var(--brand-soft); }
         .btn-danger {
-            background: #FFFFFF; color: #000000; border: 1px solid #000000;
+            background: #FFFFFF; color: var(--brand); border: 1px solid var(--brand);
         }
-        .btn-danger:hover { background: #000000; color: #FFFFFF; }
+        .btn-danger:hover { background: var(--brand); color: #FFFFFF; }
         input[type=text], input[type=email], input[type=password],
-        input[type=number], input[type=file], select, textarea {
+        input[type=number], input[type=file], input[type=date], select, textarea {
             border: 1px solid #D1D5DB;
-            transition: border-color .15s ease;
+            transition: border-color .15s ease, box-shadow .15s ease;
         }
         input:focus, select:focus, textarea:focus {
-            outline: none; border-color: #000000;
+            outline: none; border-color: var(--brand);
+            box-shadow: 0 0 0 3px rgba(139, 21, 56, .12);
         }
         .table-cell { padding: 0.75rem 1rem; border-bottom: 1px solid #E5E7EB; }
-        .nav-link.active { background: #000000; color: #FFFFFF; }
+        .sidebar { background: linear-gradient(180deg, var(--brand) 0%, var(--brand-dark) 100%); }
+        .nav-link.active { background: #FFFFFF; color: var(--brand); }
+        .text-brand { color: var(--brand); }
+        .bg-brand { background: var(--brand); }
+        .bg-brand-soft { background: var(--brand-soft); }
+        .accent-brand, .accent-black { accent-color: var(--brand); }
+        .badge { display: inline-block; padding: 2px 10px; font-size: 12px; border-radius: 999px; }
+        .badge-on  { background: var(--brand); color: #fff; }
+        .badge-off { border: 1px solid #D1D5DB; color: #6B7280; }
+        .badge-pickup   { background: #FFF4E5; color: #B45309; border: 1px solid #FCD9A8; }
+        .badge-delivery { background: var(--brand-soft); color: var(--brand); border: 1px solid #F1C6D3; }
+        .bg-black { background: var(--brand) !important; }
+        .border-black { border-color: var(--brand) !important; }
+        .hover\:bg-black:hover { background: var(--brand) !important; }
     </style>
 </head>
 <body class="min-h-screen">
@@ -46,9 +68,13 @@
 <div class="flex min-h-screen">
 
     {{-- ── Sidebar ────────────────────────────────────────────────────── --}}
-    <aside class="hidden md:flex md:w-64 flex-col bg-black text-white">
-        <div class="px-6 py-6 border-b border-white/10">
-            <h1 class="text-xl font-bold">{{ __('dashboard.dashboard_name') }}</h1>
+    <aside class="hidden md:flex md:w-64 flex-col sidebar text-white">
+        <div class="px-5 py-5 border-b border-white/10 flex items-center gap-3">
+            <img src="{{ asset('images/logo-icon.png') }}" alt="" class="w-11 h-11 rounded-xl ring-2 ring-white/30">
+            <div>
+                <h1 class="text-lg font-bold leading-tight">{{ __('dashboard.app_name') }}</h1>
+                <p class="text-xs opacity-75">{{ __('dashboard.dashboard_name') }}</p>
+            </div>
         </div>
         <nav class="flex-1 px-4 py-4 space-y-1">
             @php
@@ -56,6 +82,8 @@
                     ['route' => 'dashboard.home',              'label' => 'nav_dashboard',  'icon' => '⌂'],
                     ['route' => 'dashboard.products.index',    'label' => 'nav_products',   'icon' => '▢'],
                     ['route' => 'dashboard.categories.index',  'label' => 'nav_categories', 'icon' => '◫'],
+                    ['route' => 'dashboard.phone_models.index','label' => 'nav_phone_models','icon' => '📱'],
+                    ['route' => 'dashboard.branches.index',    'label' => 'nav_branches',   'icon' => '📍'],
                     ['route' => 'dashboard.banners.index',     'label' => 'nav_banners',    'icon' => '▭'],
                     ['route' => 'dashboard.orders.index',      'label' => 'nav_orders',     'icon' => '☑'],
                     ['route' => 'dashboard.complaints.index', 'label' => 'nav_complaints', 'icon' => '✉'],

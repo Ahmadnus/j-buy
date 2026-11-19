@@ -46,6 +46,7 @@ class DashboardOrderController extends Controller
     {
         $order = Order::with([
             'items',
+            'branch',
             'user:id,name_ar,phone,email',
             'statusLogs',
         ])->findOrFail($id);

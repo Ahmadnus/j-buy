@@ -115,13 +115,63 @@
             </dl>
         </div>
 
-        {{-- Address --}}
+        {{-- Fulfillment: delivery or branch pickup --}}
         <div class="bg-white border border-gray-200 rounded-lg p-5">
-            <div class="text-xs uppercase tracking-wide text-gray-600 mb-3">{{ __('dashboard.order_delivery_address') }}</div>
-            <div class="text-sm space-y-1">
-                <div class="font-medium">{{ $order->customer_city }}</div>
-                <div class="text-gray-700">{{ $order->customer_address }}</div>
+            <div class="flex items-center justify-between mb-3">
+                <div class="text-xs uppercase tracking-wide text-gray-600">{{ __('dashboard.order_fulfillment') }}</div>
+                @if ($order->is_pickup)
+                    <span class="badge badge-pickup">🏬 {{ __('dashboard.fulfillment_pickup') }}</span>
+                @else
+                    <span class="badge badge-delivery">🚚 {{ __('dashboard.fulfillment_delivery') }}</span>
+                @endif
             </div>
+
+            @if ($order->is_pickup)
+                <div class="text-sm space-y-1">
+                    <div class="font-medium">{{ $order->branch?->name_ar ?? $order->branch_name }}</div>
+                    @if ($order->branch)
+                        <div class="text-gray-700">{{ $order->branch->address_ar }}</div>
+                        @if ($order->branch->phone)<div dir="ltr" class="text-gray-700">☎ {{ $order->branch->phone }}</div>@endif
+                    @endif
+                </div>
+            @else
+                <div class="text-sm space-y-1">
+                    <div class="font-medium">{{ $order->customer_city }}</div>
+                    <div class="text-gray-700">{{ $order->customer_address }}</div>
+                </div>
+            @endif
+        </div>
+
+        {{-- Buyer location --}}
+        <div class="bg-white border border-gray-200 rounded-lg p-5">
+            <div class="text-xs uppercase tracking-wide text-gray-600 mb-3">{{ __('dashboard.order_buyer_location') }}</div>
+            @if ($order->maps_url)
+                <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+                <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+                <div id="order-map" class="w-full h-56 rounded-md border border-gray-200 mb-3"></div>
+                <div class="flex items-center justify-between gap-2 flex-wrap">
+                    <span class="text-xs font-mono text-gray-500" dir="ltr">{{ number_format($order->latitude, 6) }}, {{ number_format($order->longitude, 6) }}</span>
+                    <a href="{{ $order->maps_url }}" target="_blank" rel="noopener" class="btn-primary px-3 py-1.5 rounded text-xs font-semibold">
+                        🗺 {{ __('dashboard.open_in_google_maps') }}
+                    </a>
+                </div>
+                <script>
+                    (function () {
+                        const buyer = [{{ $order->latitude }}, {{ $order->longitude }}];
+                        const map = L.map('order-map').setView(buyer, 15);
+                        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {maxZoom: 19, attribution: '&copy; OpenStreetMap'}).addTo(map);
+                        L.marker(buyer).addTo(map).bindPopup(@js($order->customer_name)).openPopup();
+                        @if ($order->is_pickup && $order->branch && $order->branch->latitude !== null)
+                            const branch = [{{ $order->branch->latitude }}, {{ $order->branch->longitude }}];
+                            L.circleMarker(branch, {radius: 9, color: '#8B1538', fillColor: '#8B1538', fillOpacity: .85})
+                             .addTo(map).bindPopup(@js($order->branch->name_ar));
+                            map.fitBounds([buyer, branch], {padding: [30, 30]});
+                        @endif
+                    })();
+                </script>
+            @else
+                <p class="text-sm text-gray-500">{{ __('dashboard.order_no_location') }}</p>
+            @endif
         </div>
 
         {{-- Payment + status --}}

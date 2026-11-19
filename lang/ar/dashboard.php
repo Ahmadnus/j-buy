@@ -2,8 +2,8 @@
 
 return [
     // Branding
-    'app_name'             => 'وند ستور',
-    'dashboard_name'       => 'لوحة تحكم وند ستور',
+    'app_name'             => 'موبي فكس',
+    'dashboard_name'       => 'لوحة تحكم موبي فكس',
 
     // Common
     'language'             => 'اللغة',
@@ -221,5 +221,49 @@ return [
     'gallery_add_more'          => 'إضافة صور',
     'gallery_remove'            => 'حذف',
     'gallery_empty'             => 'لا توجد صور إضافية',
+
+
+    // phone models
+    'nav_phone_models'          => 'موديلات الهواتف',
+    'phone_models_title'        => 'موديلات الهواتف',
+    'phone_model_new'           => 'إضافة موديل',
+    'phone_model_edit'          => 'تعديل موديل',
+    'phone_model_name'          => 'الموديل',
+    'phone_model_brand'         => 'الماركة',
+    'phone_model_brand_hint'    => 'الماركات هي الأقسام (مثلاً: آبل، سامسونج، شاومي).',
+    'phone_model_year'          => 'سنة الإصدار',
+    'phone_model_parts'         => 'عدد القطع',
+    'phone_model_all_brands'    => 'كل الماركات',
+    'phone_models_empty'        => 'لا توجد موديلات بعد.',
+    'product_phone_model'       => 'موديل الهاتف',
+    'product_no_model'          => '— بدون موديل (قطعة عامة) —',
+    'product_stock'             => 'الكمية المتوفرة',
+    'product_stock_hint'        => 'اتركه فارغاً إذا لا تريد تتبع المخزون.',
+    'name_ar'                   => 'الاسم (عربي)',
+    'name_en'                   => 'الاسم (إنجليزي)',
+    'status'                    => 'الحالة',
+
+    // branches
+    'nav_branches'              => 'الأفرع',
+    'branches_title'            => 'أفرع الاستلام',
+    'branch_new'                => 'إضافة فرع',
+    'branch_edit'               => 'تعديل فرع',
+    'branch_city'               => 'المدينة',
+    'branch_phone'              => 'هاتف الفرع',
+    'branch_address'            => 'العنوان',
+    'branch_hours'              => 'ساعات العمل',
+    'branch_location'           => 'موقع الفرع على الخريطة',
+    'branch_location_hint'      => 'اضغط على الخريطة لتحديد موقع الفرع، ويمكنك سحب الدبوس لتعديله.',
+    'branch_orders_count'       => 'طلبات الاستلام',
+    'branches_empty'            => 'لا توجد أفرع بعد. أضف فرعاً ليتمكن الزبائن من الاستلام منه.',
+    'open_map'                  => 'الخريطة',
+
+    // fulfillment
+    'order_fulfillment'         => 'طريقة الاستلام',
+    'fulfillment_delivery'      => 'توصيل',
+    'fulfillment_pickup'        => 'استلام من الفرع',
+    'order_buyer_location'      => 'موقع المشتري',
+    'open_in_google_maps'       => 'فتح في خرائط جوجل',
+    'order_no_location'         => 'لم يشارك المشتري موقعه.',
 
 ];

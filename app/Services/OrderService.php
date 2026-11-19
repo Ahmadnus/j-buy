@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Enums\OrderStatus;
+use App\Models\Branch;
 use App\Models\Order;
 use App\Models\Product;
 use App\Models\ShippingRate;
@@ -63,7 +64,14 @@ class OrderService
             // on the order row so historical orders show the price the
             // customer actually paid, not whatever the admin changes it to
             // next week.
-            $shippingCost = ShippingRate::priceFor($data['city']) ?? self::FALLBACK_SHIPPING;
+            //
+            // Pickup from a branch is always free — no shipping is charged.
+            $isPickup = ($data['fulfillment_type'] ?? 'delivery') === 'pickup';
+            $branch   = $isPickup ? Branch::active()->find($data['branch_id']) : null;
+
+            $shippingCost = $isPickup
+                ? 0.0
+                : (ShippingRate::priceFor($data['city'] ?? '') ?? self::FALLBACK_SHIPPING);
 
             $totalAmount = $productsTotal + $shippingCost;
 
@@ -74,10 +82,15 @@ class OrderService
                 'user_id'          => $user->id,
                 'customer_name'    => $data['full_name'],
                 'customer_phone'   => $data['phone'],
-                'customer_city'    => $data['city'],
-                'customer_address' => $data['address'],
+                'customer_city'    => $isPickup ? ($branch?->city_ar ?? $data['city'] ?? null) : $data['city'],
+                'customer_address' => $isPickup ? ($data['address'] ?? null) : $data['address'],
+                'latitude'         => $data['latitude']  ?? null,
+                'longitude'        => $data['longitude'] ?? null,
                 'customer_notes'   => $data['notes'] ?? null,
                 'payment_method'   => $data['payment_method'],
+                'fulfillment_type' => $isPickup ? 'pickup' : 'delivery',
+                'branch_id'        => $branch?->id,
+                'branch_name'      => $branch?->name_ar,
                 'status'           => OrderStatus::Confirmed,
                 'shipping_cost'    => $shippingCost,
                 'total_amount'     => $totalAmount,

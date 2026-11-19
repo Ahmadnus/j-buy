@@ -2,6 +2,8 @@
 
 use App\Http\Controllers\Admin\Dashboard\DashboardAuthController;
 use App\Http\Controllers\Admin\Dashboard\DashboardBannerController;
+use App\Http\Controllers\Admin\Dashboard\DashboardBranchController;
+use App\Http\Controllers\Admin\Dashboard\DashboardPhoneModelController;
 use App\Http\Controllers\Admin\Dashboard\DashboardCategoryController;
 use App\Http\Controllers\Admin\Dashboard\DashboardHomeController;
 use App\Http\Controllers\Admin\Dashboard\DashboardOrderController;
@@ -54,6 +56,22 @@ Route::prefix('admin')->middleware('dashboard.locale')->group(function () {
         Route::put('categories/{id}',          [DashboardCategoryController::class, 'update'])->name('dashboard.categories.update');
         Route::delete('categories/{id}',       [DashboardCategoryController::class, 'destroy'])->name('dashboard.categories.destroy');
 
+
+        // Phone models (brand → model → parts)
+        Route::get('phone-models',             [DashboardPhoneModelController::class, 'index'])->name('dashboard.phone_models.index');
+        Route::get('phone-models/create',      [DashboardPhoneModelController::class, 'create'])->name('dashboard.phone_models.create');
+        Route::post('phone-models',            [DashboardPhoneModelController::class, 'store'])->name('dashboard.phone_models.store');
+        Route::get('phone-models/{id}/edit',   [DashboardPhoneModelController::class, 'edit'])->name('dashboard.phone_models.edit');
+        Route::put('phone-models/{id}',        [DashboardPhoneModelController::class, 'update'])->name('dashboard.phone_models.update');
+        Route::delete('phone-models/{id}',     [DashboardPhoneModelController::class, 'destroy'])->name('dashboard.phone_models.destroy');
+
+        // Pickup branches
+        Route::get('branches',                 [DashboardBranchController::class, 'index'])->name('dashboard.branches.index');
+        Route::get('branches/create',          [DashboardBranchController::class, 'create'])->name('dashboard.branches.create');
+        Route::post('branches',                [DashboardBranchController::class, 'store'])->name('dashboard.branches.store');
+        Route::get('branches/{branch}/edit',   [DashboardBranchController::class, 'edit'])->name('dashboard.branches.edit');
+        Route::put('branches/{branch}',        [DashboardBranchController::class, 'update'])->name('dashboard.branches.update');
+        Route::delete('branches/{branch}',     [DashboardBranchController::class, 'destroy'])->name('dashboard.branches.destroy');
         // Banners
         Route::get('banners',                  [DashboardBannerController::class, 'index'])->name('dashboard.banners.index');
         Route::get('banners/create',           [DashboardBannerController::class, 'create'])->name('dashboard.banners.create');

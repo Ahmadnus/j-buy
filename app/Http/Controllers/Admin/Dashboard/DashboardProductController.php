@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin\Dashboard;
 
 use App\Http\Controllers\Controller;
 use App\Models\Category;
+use App\Models\PhoneModel;
 use App\Models\Product;
 use App\Models\ProductColor;
 use App\Models\ProductImage;
@@ -36,11 +37,13 @@ class DashboardProductController extends Controller
 
     public function index(Request $request)
     {
-        $q        = $request->get('q');
-        $products = Product::with('category')
-            ->when($q, fn ($qb) => $qb->where('name_ar', 'like', "%$q%")
+        $q          = $request->get('q');
+        $phoneModel = $request->integer('phone_model') ?: null;
+        $products = Product::with(['category', 'phoneModel'])
+            ->when($phoneModel, fn ($qb) => $qb->where('phone_model_id', $phoneModel))
+            ->when($q, fn ($qb) => $qb->where(fn ($w) => $w->where('name_ar', 'like', "%$q%")
                                        ->orWhere('name_en', 'like', "%$q%")
-                                       ->orWhere('product_code', 'like', "%$q%"))
+                                       ->orWhere('product_code', 'like', "%$q%")))
             ->orderByDesc('id')
             ->paginate(20)
             ->withQueryString();
@@ -53,6 +56,7 @@ class DashboardProductController extends Controller
         return view('admin.products.form', [
             'product'    => new Product(),
             'categories' => Category::orderBy('sort_order')->get(),
+            'phoneModels'=> PhoneModel::orderBy('sort_order')->orderByDesc('release_year')->get(),
             'colors'     => self::PREDEFINED_COLORS,
             'sizes'      => self::PREDEFINED_SIZES,
             'selectedColors' => [],
@@ -71,6 +75,7 @@ class DashboardProductController extends Controller
         return view('admin.products.form', [
             'product'        => $product,
             'categories'     => Category::orderBy('sort_order')->get(),
+            'phoneModels'    => PhoneModel::orderBy('sort_order')->orderByDesc('release_year')->get(),
             'colors'         => self::PREDEFINED_COLORS,
             'sizes'          => self::PREDEFINED_SIZES,
             'selectedColors' => $selectedColors,
@@ -131,6 +136,8 @@ class DashboardProductController extends Controller
             'price'        => 'required|numeric|min:0',
             'currency'     => 'nullable|string|max:10',
             'category_id'  => 'required|exists:categories,id',
+            'phone_model_id' => 'nullable|exists:phone_models,id',
+            'stock'        => 'nullable|integer|min:0',
             'material_ar'  => 'nullable|string|max:500',
             'material_en'  => 'nullable|string|max:500',
             'badge'        => 'nullable|string|max:100',

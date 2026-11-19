@@ -18,7 +18,9 @@ class Order extends Model
         'order_number', 'user_id',
         'customer_name', 'customer_phone', 'customer_city',
         'customer_address', 'customer_notes',
-        'payment_method', 'status',
+        'latitude', 'longitude',
+        'payment_method', 'fulfillment_type', 'branch_id', 'branch_name',
+        'status',
         'shipping_cost', 'total_amount',
     ];
 
@@ -28,6 +30,8 @@ class Order extends Model
             'status'        => OrderStatus::class,
             'shipping_cost' => 'decimal:2',
             'total_amount'  => 'decimal:2',
+            'latitude'      => 'float',
+            'longitude'     => 'float',
             'deleted_at'    => 'datetime',
         ];
     }
@@ -37,6 +41,11 @@ class Order extends Model
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class)->withDefault(['name_ar' => 'مستخدم محذوف']);
+    }
+
+    public function branch(): BelongsTo
+    {
+        return $this->belongsTo(Branch::class);
     }
 
     public function items(): HasMany
@@ -59,6 +68,18 @@ class Order extends Model
     public function getProductsTotalAttribute(): float
     {
         return round((float) $this->total_amount - (float) $this->shipping_cost, 2);
+    }
+
+    public function getIsPickupAttribute(): bool
+    {
+        return $this->fulfillment_type === 'pickup';
+    }
+
+    /** Google Maps link to the customer's pinned location (null if not shared). */
+    public function getMapsUrlAttribute(): ?string
+    {
+        if ($this->latitude === null || $this->longitude === null) return null;
+        return "https://www.google.com/maps/search/?api=1&query={$this->latitude},{$this->longitude}";
     }
 
     // ── Business logic ────────────────────────────────────────────────────────

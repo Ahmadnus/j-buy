@@ -28,6 +28,13 @@ class ProductResource extends JsonResource
                 'name_ar' => $this->category->name_ar,
                 'slug'    => $this->category->slug,
             ]),
+            'phone_model'  => $this->whenLoaded('phoneModel', fn() => $this->phoneModel ? [
+                'id'      => $this->phoneModel->id,
+                'name_ar' => $this->phoneModel->name_ar,
+                'name_en' => $this->phoneModel->name_en,
+            ] : null),
+            'stock'        => $this->stock,
+            'in_stock'     => $this->stock === null || $this->stock > 0,
             'material_ar'  => $this->material_ar,
             'badge'        => $this->badge,
             // Comes from scopeWithFavoriteStatus() — 0 for guests

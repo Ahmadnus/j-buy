@@ -2,8 +2,8 @@
 
 return [
     // Branding
-    'app_name'             => 'Windstore',
-    'dashboard_name'       => 'Windstore Admin',
+    'app_name'             => 'MobiFix',
+    'dashboard_name'       => 'MobiFix Admin',
 
     // Common
     'language'             => 'Language',
@@ -221,5 +221,49 @@ return [
     'gallery_add_more'          => 'Add Images',
     'gallery_remove'            => 'Remove',
     'gallery_empty'             => 'No additional images yet',
+
+
+    // phone models
+    'nav_phone_models'          => 'Phone Models',
+    'phone_models_title'        => 'Phone Models',
+    'phone_model_new'           => 'Add Model',
+    'phone_model_edit'          => 'Edit Model',
+    'phone_model_name'          => 'Model',
+    'phone_model_brand'         => 'Brand',
+    'phone_model_brand_hint'    => 'Brands are categories (e.g. Apple, Samsung, Xiaomi).',
+    'phone_model_year'          => 'Release year',
+    'phone_model_parts'         => 'Parts',
+    'phone_model_all_brands'    => 'All brands',
+    'phone_models_empty'        => 'No phone models yet.',
+    'product_phone_model'       => 'Phone model',
+    'product_no_model'          => '— No model (generic item) —',
+    'product_stock'             => 'Stock',
+    'product_stock_hint'        => 'Leave empty to not track stock.',
+    'name_ar'                   => 'Name (Arabic)',
+    'name_en'                   => 'Name (English)',
+    'status'                    => 'Status',
+
+    // branches
+    'nav_branches'              => 'Branches',
+    'branches_title'            => 'Pickup Branches',
+    'branch_new'                => 'Add Branch',
+    'branch_edit'               => 'Edit Branch',
+    'branch_city'               => 'City',
+    'branch_phone'              => 'Branch phone',
+    'branch_address'            => 'Address',
+    'branch_hours'              => 'Working hours',
+    'branch_location'           => 'Branch location on map',
+    'branch_location_hint'      => 'Click the map to set the branch location; drag the pin to adjust.',
+    'branch_orders_count'       => 'Pickup orders',
+    'branches_empty'            => 'No branches yet. Add one so customers can pick up orders.',
+    'open_map'                  => 'Map',
+
+    // fulfillment
+    'order_fulfillment'         => 'Fulfillment',
+    'fulfillment_delivery'      => 'Delivery',
+    'fulfillment_pickup'        => 'Branch pickup',
+    'order_buyer_location'      => 'Buyer location',
+    'open_in_google_maps'       => 'Open in Google Maps',
+    'order_no_location'         => 'The buyer did not share a location.',
 
 ];

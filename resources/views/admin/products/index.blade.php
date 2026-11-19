@@ -36,7 +36,12 @@
             @forelse ($products as $product)
                 <tr>
                     <td class="table-cell">{{ $product->id }}</td>
-                    <td class="table-cell font-medium">{{ $product->name_ar }}</td>
+                    <td class="table-cell font-medium">
+                        {{ $product->name_ar }}
+                        @if ($product->phoneModel)
+                            <div class="text-xs text-brand">📱 {{ $product->phoneModel->name_ar }}</div>
+                        @endif
+                    </td>
                     <td class="table-cell text-gray-600">{{ $product->product_code }}</td>
                     <td class="table-cell text-gray-600">{{ $product->category->name_ar ?? '—' }}</td>
                     <td class="table-cell">{{ number_format($product->price, 2) }} {{ $product->currency }}</td>

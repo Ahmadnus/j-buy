@@ -38,7 +38,7 @@ class OrderController extends Controller
 
     public function show(Request $request, int $id): JsonResponse
     {
-        $order = Order::with('items')
+        $order = Order::with(['items', 'branch'])
                       ->where('user_id', $request->user()->id)
                       ->find($id);
 

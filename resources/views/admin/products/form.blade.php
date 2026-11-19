@@ -71,20 +71,66 @@
             </div>
         </div>
 
-        <div>
-            <label class="block text-sm font-medium mb-1.5">
-                {{ __('dashboard.product_category') }} <span class="text-red-600">*</span>
-            </label>
-            <select name="category_id" required class="w-full px-3 py-2 rounded-md text-sm">
-                <option value="">—</option>
-                @foreach ($categories as $cat)
-                    <option value="{{ $cat->id }}"
-                            {{ old('category_id', $product->category_id) == $cat->id ? 'selected' : '' }}>
-                        {{ $cat->name_ar }} / {{ $cat->name_en }}
-                    </option>
-                @endforeach
-            </select>
+        <div class="grid md:grid-cols-3 gap-5">
+            <div>
+                <label class="block text-sm font-medium mb-1.5">
+                    {{ __('dashboard.product_category') }} <span class="text-red-600">*</span>
+                </label>
+                <select name="category_id" id="category_id" required class="w-full px-3 py-2 rounded-md text-sm">
+                    <option value="">—</option>
+                    @foreach ($categories as $cat)
+                        <option value="{{ $cat->id }}"
+                                {{ old('category_id', $product->category_id) == $cat->id ? 'selected' : '' }}>
+                            {{ $cat->name_ar }} / {{ $cat->name_en }}
+                        </option>
+                    @endforeach
+                </select>
+            </div>
+
+            {{-- The phone model this part fits — filtered by the chosen brand --}}
+            <div>
+                <label class="block text-sm font-medium mb-1.5">
+                    {{ __('dashboard.product_phone_model') }}
+                    <span class="text-xs text-gray-500">({{ __('dashboard.optional') }})</span>
+                </label>
+                <select name="phone_model_id" id="phone_model_id" class="w-full px-3 py-2 rounded-md text-sm">
+                    <option value="">{{ __('dashboard.product_no_model') }}</option>
+                    @foreach ($phoneModels as $pm)
+                        <option value="{{ $pm->id }}" data-category="{{ $pm->category_id }}"
+                                {{ old('phone_model_id', $product->phone_model_id) == $pm->id ? 'selected' : '' }}>
+                            {{ $pm->name_ar }}
+                        </option>
+                    @endforeach
+                </select>
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium mb-1.5">
+                    {{ __('dashboard.product_stock') }}
+                    <span class="text-xs text-gray-500">({{ __('dashboard.optional') }})</span>
+                </label>
+                <input type="number" name="stock" min="0"
+                       value="{{ old('stock', $product->stock) }}"
+                       class="w-full px-3 py-2 rounded-md text-sm" dir="ltr">
+                <p class="text-xs text-gray-500 mt-1">{{ __('dashboard.product_stock_hint') }}</p>
+            </div>
         </div>
+        <script>
+            (function () {
+                const cat = document.getElementById('category_id');
+                const pm  = document.getElementById('phone_model_id');
+                function filter() {
+                    [...pm.options].forEach(o => {
+                        if (!o.dataset.category) return;
+                        const show = !cat.value || o.dataset.category === cat.value;
+                        o.hidden = !show;
+                        if (!show && o.selected) pm.value = '';
+                    });
+                }
+                cat.addEventListener('change', filter);
+                filter();
+            })();
+        </script>
 
         {{-- ── Bilingual material ─────────────────────────────────────── --}}
         <div class="grid md:grid-cols-2 gap-5">

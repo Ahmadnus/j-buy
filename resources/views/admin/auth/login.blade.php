@@ -5,16 +5,21 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>{{ __('dashboard.login_title') }} — {{ __('dashboard.dashboard_name') }}</title>
+    <link rel="icon" type="image/png" href="{{ asset('images/logo-icon.png') }}">
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         body {
             font-family: {{ app()->getLocale() === 'ar' ? "'Cairo'" : "'Inter'" }}, sans-serif;
-            background: #FFFFFF; color: #000000;
+            background: linear-gradient(160deg, #FFFFFF 55%, #FBEEF2 100%); color: #1F1A1C;
         }
-        input { border: 1px solid #D1D5DB; transition: border-color .15s ease; }
-        input:focus { outline: none; border-color: #000000; }
+        input { border: 1px solid #D1D5DB; transition: border-color .15s ease, box-shadow .15s ease; }
+        input:focus { outline: none; border-color: #8B1538; box-shadow: 0 0 0 3px rgba(139,21,56,.12); }
+        .btn-brand { background: #8B1538; color: #fff; }
+        .btn-brand:hover { background: #5E0B24; }
+        .lang-btn { border: 1px solid #8B1538; color: #8B1538; }
+        .lang-btn:hover { background: #8B1538; color: #fff; }
     </style>
 </head>
 <body class="min-h-screen flex flex-col">
@@ -23,7 +28,7 @@
     <div class="absolute top-4 {{ app()->getLocale() === 'ar' ? 'left-4' : 'right-4' }}">
         @php $other = app()->getLocale() === 'ar' ? 'en' : 'ar'; @endphp
         <a href="{{ route('dashboard.locale', $other) }}"
-           class="text-sm px-3 py-1.5 border border-black rounded hover:bg-black hover:text-white transition">
+           class="lang-btn text-sm px-3 py-1.5 rounded transition">
             {{ $other === 'ar' ? 'العربية' : 'English' }}
         </a>
     </div>
@@ -33,16 +38,15 @@
 
             {{-- Logo / brand --}}
             <div class="text-center mb-10">
-                <div class="inline-flex items-center justify-center w-14 h-14 bg-black text-white rounded-full text-xl font-bold mb-4">
-                    J
-                </div>
+                <img src="{{ asset('images/logo.jpg') }}" alt="{{ __('dashboard.app_name') }}"
+                     class="mx-auto h-24 w-auto mb-6 rounded-xl">
                 <h1 class="text-2xl font-bold">{{ __('dashboard.login_title') }}</h1>
                 <p class="text-sm text-gray-600 mt-2">{{ __('dashboard.login_subtitle') }}</p>
             </div>
 
             {{-- Errors --}}
             @if ($errors->any())
-                <div class="border border-black text-sm px-4 py-3 mb-5">
+                <div class="border border-red-300 bg-red-50 text-red-700 rounded-md text-sm px-4 py-3 mb-5">
                     @foreach ($errors->all() as $error)
                         <p>{{ $error }}</p>
                     @endforeach
@@ -67,7 +71,7 @@
                 </div>
 
                 <button type="submit"
-                        class="w-full bg-black text-white py-2.5 rounded-md text-sm font-semibold hover:opacity-85 transition mt-2">
+                        class="btn-brand w-full py-2.5 rounded-md text-sm font-semibold transition mt-2">
                     {{ __('dashboard.login') }}
                 </button>
             </form>

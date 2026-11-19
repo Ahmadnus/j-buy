@@ -69,6 +69,7 @@
                 <th class="table-cell font-semibold">{{ __('dashboard.order_date') }}</th>
                 <th class="table-cell font-semibold">{{ __('dashboard.order_total') }}</th>
                 <th class="table-cell font-semibold">{{ __('dashboard.order_payment_method') }}</th>
+                <th class="table-cell font-semibold">{{ __('dashboard.order_fulfillment') }}</th>
                 <th class="table-cell font-semibold">{{ __('dashboard.order_status') }}</th>
                 <th class="table-cell font-semibold">{{ __('dashboard.actions') }}</th>
             </tr>
@@ -85,6 +86,16 @@
                         {{ $order->payment_method === 'cod' ? __('dashboard.payment_cod') : $order->payment_method }}
                     </td>
                     <td class="table-cell">
+                        @if ($order->fulfillment_type === 'pickup')
+                            <span class="badge badge-pickup" title="{{ $order->branch_name }}">🏬 {{ __('dashboard.fulfillment_pickup') }}</span>
+                        @else
+                            <span class="badge badge-delivery">🚚 {{ __('dashboard.fulfillment_delivery') }}</span>
+                        @endif
+                        @if ($order->latitude !== null)
+                            <a href="{{ $order->maps_url }}" target="_blank" rel="noopener" title="{{ __('dashboard.order_buyer_location') }}">📍</a>
+                        @endif
+                    </td>
+                    <td class="table-cell">
                         <span class="inline-block px-2 py-0.5 text-xs border border-black rounded">
                             {{ __('dashboard.order_status_' . $order->status->value) }}
                         </span>
@@ -98,7 +109,7 @@
                 </tr>
             @empty
                 <tr>
-                    <td colspan="8" class="table-cell text-center text-gray-500 py-8">
+                    <td colspan="9" class="table-cell text-center text-gray-500 py-8">
                         {{ __('dashboard.no_records') }}
                     </td>
                 </tr>

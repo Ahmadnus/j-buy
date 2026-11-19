@@ -2,6 +2,8 @@
 
 use App\Http\Controllers\Api\Auth\AuthController;
 use App\Http\Controllers\Api\BannerController;
+use App\Http\Controllers\Api\BranchController;
+use App\Http\Controllers\Api\PhoneModelController;
 use App\Http\Controllers\Api\CartController;
 use App\Http\Controllers\Api\CategoryController;
 use App\Http\Controllers\Api\FavoriteController;
@@ -38,6 +40,11 @@ Route::prefix('v1')->group(function () {
     Route::get('shipping-rates', [ShippingRateController::class, 'index']);
     Route::get('categories',     [CategoryController::class, 'index']);
     Route::get('banners',    [BannerController::class,   'index']);
+
+    // Phone models (brand → model → parts) and pickup branches
+    Route::get('phone-models',      [PhoneModelController::class, 'index']);
+    Route::get('phone-models/{id}', [PhoneModelController::class, 'show'])->whereNumber('id');
+    Route::get('branches',          [BranchController::class,     'index']);
 
     // ── Authenticated ─────────────────────────────────────────────────────────
     Route::middleware('auth.token')->group(function () {
