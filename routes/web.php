@@ -22,6 +22,10 @@ use Illuminate\Support\Facades\Route;
 | its mobile admin features; those are separate.
 */
 
+// The web storefront (Flutter build) is deployed as static files under
+// public/shop — send visitors of the bare domain there.
+Route::get('/', fn () => redirect('/shop/'));
+
 Route::prefix('admin')->middleware('dashboard.locale')->group(function () {
 
     // Locale switcher — public so the login page can be translated
