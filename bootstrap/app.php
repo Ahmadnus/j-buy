@@ -19,6 +19,10 @@ return Application::configure(basePath: dirname(__DIR__))
     'auth.token'       => \App\Http\Middleware\AuthenticateWithToken::class,
     'auth.optional'    => \App\Http\Middleware\OptionalTokenAuth::class,
 ]);
+   // The dashboard's login route is named `dashboard.login`, not Laravel's
+   // default `login`. Without this, opening /admin while signed out crashed
+   // with "Route [login] not defined" (500) instead of showing the login page.
+   $middleware->redirectGuestsTo(fn () => route('dashboard.login'));
 })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->shouldRenderJsonWhen(
