@@ -2,8 +2,8 @@
 
 return [
     // Branding
-    'app_name'             => 'موبي فكس',
-    'dashboard_name'       => 'لوحة تحكم موبي فكس',
+    'app_name'             => 'TareQ Mobile',
+    'dashboard_name'       => 'لوحة تحكم TareQ Mobile',
 
     // Common
     'language'             => 'اللغة',

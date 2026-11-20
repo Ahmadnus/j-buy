@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>{{ __('dashboard.login_title') }} — {{ __('dashboard.dashboard_name') }}</title>
-    <link rel="icon" type="image/png" href="{{ asset('images/logo-icon.png') }}">
+    <link rel="icon" type="image/png" href="{{ asset('images/logo-icon.png') }}?v=2">
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -38,8 +38,8 @@
 
             {{-- Logo / brand --}}
             <div class="text-center mb-10">
-                <img src="{{ asset('images/logo.jpg') }}" alt="{{ __('dashboard.app_name') }}"
-                     class="mx-auto h-24 w-auto mb-6 rounded-xl">
+                <img src="{{ asset('images/logo.png') }}?v=2" alt="{{ __('dashboard.app_name') }}"
+                     class="mx-auto h-32 w-auto mb-6">
                 <h1 class="text-2xl font-bold">{{ __('dashboard.login_title') }}</h1>
                 <p class="text-sm text-gray-600 mt-2">{{ __('dashboard.login_subtitle') }}</p>
             </div>

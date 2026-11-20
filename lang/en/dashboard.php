@@ -2,8 +2,8 @@
 
 return [
     // Branding
-    'app_name'             => 'MobiFix',
-    'dashboard_name'       => 'MobiFix Admin',
+    'app_name'             => 'TareQ Mobile',
+    'dashboard_name'       => 'TareQ Mobile Admin',
 
     // Common
     'language'             => 'Language',

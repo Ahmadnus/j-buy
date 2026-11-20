@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', __('dashboard.dashboard_name')) — {{ __('dashboard.app_name') }}</title>
-    <link rel="icon" type="image/png" href="{{ asset('images/logo-icon.png') }}">
+    <link rel="icon" type="image/png" href="{{ asset('images/logo-icon.png') }}?v=2">
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -70,7 +70,7 @@
     {{-- ── Sidebar ────────────────────────────────────────────────────── --}}
     <aside class="hidden md:flex md:w-64 flex-col sidebar text-white">
         <div class="px-5 py-5 border-b border-white/10 flex items-center gap-3">
-            <img src="{{ asset('images/logo-icon.png') }}" alt="" class="w-11 h-11 rounded-xl ring-2 ring-white/30">
+            <img src="{{ asset('images/logo-icon.png') }}?v=2" alt="" class="w-11 h-11 rounded-xl ring-2 ring-white/30">
             <div>
                 <h1 class="text-lg font-bold leading-tight">{{ __('dashboard.app_name') }}</h1>
                 <p class="text-xs opacity-75">{{ __('dashboard.dashboard_name') }}</p>
