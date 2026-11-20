@@ -86,7 +86,8 @@
                     ['route' => 'dashboard.branches.index',    'label' => 'nav_branches',   'icon' => '📍'],
                     ['route' => 'dashboard.banners.index',     'label' => 'nav_banners',    'icon' => '▭'],
                     ['route' => 'dashboard.orders.index',      'label' => 'nav_orders',     'icon' => '☑'],
-                    ['route' => 'dashboard.complaints.index', 'label' => 'nav_complaints', 'icon' => '✉'],
+                    ['route' => 'dashboard.complaints.index', 'label' => 'nav_complaints', 'icon' => '✉',
+                     'badge' => \App\Models\Complaint::where('admin_unread', true)->count()],
                     ['route' => 'dashboard.shipping.index',    'label' => 'nav_shipping',   'icon' => '⚓'],
                     ['route' => 'dashboard.users.index',       'label' => 'nav_users',      'icon' => '☻'],
                 ];
@@ -97,6 +98,9 @@
                    class="nav-link flex items-center gap-3 px-4 py-2.5 rounded-md text-sm font-medium hover:bg-white/10 transition {{ $isActive ? 'active' : '' }}">
                     <span class="text-base opacity-80">{{ $link['icon'] }}</span>
                     <span>{{ __('dashboard.' . $link['label']) }}</span>
+                    @if (! empty($link['badge']))
+                        <span class="ms-auto min-w-[1.25rem] px-1.5 py-0.5 rounded-full bg-white text-rose-800 text-xs font-bold text-center">{{ $link['badge'] }}</span>
+                    @endif
                 </a>
             @endforeach
         </nav>
@@ -139,6 +143,9 @@
                 <a href="{{ route($link['route']) }}"
                    class="text-xs whitespace-nowrap px-3 py-1.5 rounded-md {{ $isActive ? 'bg-white text-black' : '' }}">
                     {{ __('dashboard.' . $link['label']) }}
+                    @if (! empty($link['badge']))
+                        <span class="ms-1 px-1.5 rounded-full bg-rose-600 text-white font-bold">{{ $link['badge'] }}</span>
+                    @endif
                 </a>
             @endforeach
         </nav>

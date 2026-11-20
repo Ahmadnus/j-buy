@@ -62,6 +62,33 @@ class AuthenticateWithToken
      * 4. Authorization header         | Nginx / localhost / non-broken Apache
      * 5. ?api_token= query string     | ALWAYS works, URL is never stripped
      */
+    /**
+     * Resolves the signed-in user from the request without rejecting guests.
+     * Returns null when there is no usable token. Used by OptionalTokenAuth.
+     */
+    public static function userFromRequest(Request $request): mixed
+    {
+        $token = (new self())->resolveToken($request);
+        if (! $token) {
+            return null;
+        }
+
+        $pat = PersonalAccessToken::findToken($token);
+        if (! $pat || ($pat->expires_at && $pat->expires_at->isPast())) {
+            return null;
+        }
+
+        $user = $pat->tokenable;
+        if (! $user || (isset($user->is_active) && ! $user->is_active)) {
+            return null;
+        }
+
+        $pat->forceFill(['last_used_at' => now()])->save();
+        $user->withAccessToken($pat);
+
+        return $user;
+    }
+
     private function resolveToken(Request $request): ?string
     {
         // ── Source 1: Custom header ───────────────────────────────────────────

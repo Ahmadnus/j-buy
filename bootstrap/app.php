@@ -17,6 +17,7 @@ return Application::configure(basePath: dirname(__DIR__))
    $middleware->alias([
     'dashboard.locale' => \App\Http\Middleware\SetDashboardLocale::class,
     'auth.token'       => \App\Http\Middleware\AuthenticateWithToken::class,
+    'auth.optional'    => \App\Http\Middleware\OptionalTokenAuth::class,
 ]);
 })
     ->withExceptions(function (Exceptions $exceptions): void {

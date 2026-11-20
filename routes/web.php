@@ -91,6 +91,7 @@ Route::prefix('admin')->middleware('dashboard.locale')->group(function () {
         Route::get('complaints',               [DashboardComplaintController::class, 'index'])->name('dashboard.complaints.index');
         Route::get('complaints/{complaint}',   [DashboardComplaintController::class, 'show'])->name('dashboard.complaints.show');
         Route::put('complaints/{complaint}',   [DashboardComplaintController::class, 'update'])->name('dashboard.complaints.update');
+        Route::post('complaints/{complaint}/reply', [DashboardComplaintController::class, 'reply'])->name('dashboard.complaints.reply');
 
 
         // Shipping rates

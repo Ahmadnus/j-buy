@@ -46,6 +46,11 @@ Route::prefix('v1')->group(function () {
     Route::get('phone-models/{id}', [PhoneModelController::class, 'show'])->whereNumber('id');
     Route::get('branches',          [BranchController::class,     'index']);
 
+    // Support — guests can open a conversation too (with name + phone).
+    // Rate-limited because it is reachable without an account.
+    Route::post('complaints', [ComplaintController::class, 'store'])
+        ->middleware(['auth.optional', 'throttle:5,1']);
+
     // ── Authenticated ─────────────────────────────────────────────────────────
     Route::middleware('auth.token')->group(function () {
 
@@ -69,8 +74,13 @@ Route::prefix('v1')->group(function () {
         // Orders
         Route::get('orders',      [OrderController::class, 'index']);
         Route::get('orders/{id}', [OrderController::class, 'show']);
-        Route::post('complaints',         [ComplaintController::class, 'store']);
-    Route::post('orders',     [OrderController::class, 'store']);
+        Route::post('orders',     [OrderController::class, 'store']);
+
+        // Support conversations (the customer's own)
+        Route::get('complaints',                [ComplaintController::class, 'index']);
+        Route::get('complaints/{id}',           [ComplaintController::class, 'show'])->whereNumber('id');
+        Route::post('complaints/{id}/messages', [ComplaintController::class, 'reply'])
+            ->whereNumber('id')->middleware('throttle:20,1');
 
         // Profile
         Route::get('profile',          [ProfileController::class, 'show']);

@@ -23,10 +23,14 @@
             </option>
         @endforeach
     </select>
+    <label class="flex items-center gap-2 text-sm text-gray-700">
+        <input type="checkbox" name="unread" value="1" {{ $unread ? 'checked' : '' }}>
+        {{ __('dashboard.complaint_unread_only') }}
+    </label>
     <button type="submit" class="btn-primary px-4 py-2 rounded text-sm">
         {{ __('dashboard.search') }}
     </button>
-    @if($q || $status)
+    @if($q || $status || $unread)
         <a href="{{ route('dashboard.complaints.index') }}"
            class="btn-secondary px-4 py-2 rounded text-sm">✕</a>
     @endif
@@ -46,13 +50,30 @@
         </thead>
         <tbody>
             @forelse ($complaints as $c)
-                <tr class="border-t border-gray-100">
-                    <td class="px-4 py-3 text-gray-500 font-mono" dir="ltr">{{ $c->id }}</td>
-                    <td class="px-4 py-3">
-                        <div class="font-medium">{{ $c->user->name_ar }}</div>
-                        <div class="text-xs text-gray-500" dir="ltr">{{ $c->user->phone }}</div>
+                <tr class="border-t border-gray-100 {{ $c->admin_unread ? 'bg-rose-50/60' : '' }}">
+                    <td class="px-4 py-3 text-gray-500 font-mono" dir="ltr">
+                        @if ($c->admin_unread)
+                            <span class="inline-block w-2 h-2 rounded-full bg-rose-600 me-1" title="{{ __('dashboard.complaint_unread') }}"></span>
+                        @endif
+                        {{ $c->id }}
                     </td>
-                    <td class="px-4 py-3">{{ Str::limit($c->subject, 50) }}</td>
+                    <td class="px-4 py-3">
+                        <div class="font-medium flex items-center gap-2">
+                            {{ $c->contactName() }}
+                            @if ($c->isGuest())
+                                <span class="inline-block px-1.5 py-0.5 text-[10px] rounded bg-amber-100 text-amber-800">{{ __('dashboard.complaint_guest') }}</span>
+                            @endif
+                        </div>
+                        <div class="text-xs text-gray-500" dir="ltr">{{ $c->contactPhone() }}</div>
+                    </td>
+                    <td class="px-4 py-3">
+                        <div class="{{ $c->admin_unread ? 'font-semibold' : '' }}">{{ Str::limit($c->subject, 50) }}</div>
+                        @if ($c->latestMessage)
+                            <div class="text-xs text-gray-500 mt-0.5">
+                                {{ $c->latestMessage->isFromAdmin() ? __('dashboard.complaint_you') . ': ' : '' }}{{ Str::limit($c->latestMessage->body, 70) }}
+                            </div>
+                        @endif
+                    </td>
                     <td class="px-4 py-3">
                         @php $color = match($c->status) {
                             'new'       => 'bg-yellow-100 text-yellow-800',
@@ -66,7 +87,7 @@
                         </span>
                     </td>
                     <td class="px-4 py-3 text-gray-500 text-xs" dir="ltr">
-                        {{ $c->created_at->format('Y-m-d H:i') }}
+                        {{ ($c->last_message_at ?? $c->created_at)->format('Y-m-d H:i') }}
                     </td>
                     <td class="px-4 py-3 text-end">
                         <a href="{{ route('dashboard.complaints.show', $c) }}"
