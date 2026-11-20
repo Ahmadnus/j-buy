@@ -7,7 +7,7 @@ use Illuminate\Validation\Rules\Password;
 /**
  * Phone-based registration.
  *
- * Required fields: name_ar, username, phone, region, password.
+ * Required fields: name_ar, username, phone, password. Region is optional.
  * No email — email-based registration has been removed.
  */
 class RegisterRequest extends FormRequest
@@ -20,7 +20,8 @@ class RegisterRequest extends FormRequest
         'name_ar' => 'required|max:255',
         'username' => 'required|max:100|unique:users,username',
         'phone' => 'required|unique:users,phone',
-        'region' => 'required|string|max:100|exists:shipping_rates,city_ar',
+        // Optional: the delivery area is chosen per order at checkout.
+        'region' => 'nullable|string|max:100|exists:shipping_rates,city_ar',
         'password' => 'required|min:6|confirmed',
     ];
 }

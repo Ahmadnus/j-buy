@@ -9,6 +9,8 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         $this->call([
+            // Delivery areas — registration and checkout depend on them.
+            ShippingRateSeeder::class,
             CategorySeeder::class,
             BannerSeeder::class,
             ProductSeeder::class,

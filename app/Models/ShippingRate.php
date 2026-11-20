@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class ShippingRate extends Model
 {
-    protected $fillable = ['city_ar', 'city_en', 'price', 'is_active', 'sort_order'];
+    protected $fillable = ['city_ar', 'city_en', 'governorate_ar', 'governorate_en', 'price', 'is_active', 'sort_order'];
 
     protected function casts(): array
     {
@@ -20,7 +20,7 @@ class ShippingRate extends Model
     /**
      * All active rates, sorted.
      *
-     * NO cache — the table has at most 12 rows (one per Jordanian governorate)
+     * NO cache — the table holds well under a hundred delivery areas
      * so a direct DB query is negligible. Caching Eloquent model collections
      * causes "__PHP_Incomplete_Class" errors on shared hosting when the cache
      * file was written under a different PHP version or before autoload was

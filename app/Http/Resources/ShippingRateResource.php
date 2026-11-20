@@ -13,6 +13,8 @@ class ShippingRateResource extends JsonResource
             'id'      => $this->id,
             'city_ar' => $this->city_ar,
             'city_en' => $this->city_en,
+            'governorate_ar' => $this->governorate_ar,
+            'governorate_en' => $this->governorate_en,
             'price'   => number_format((float) $this->price, 3, '.', ''),
         ];
     }
